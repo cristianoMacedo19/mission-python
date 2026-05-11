@@ -70,7 +70,7 @@ body{background:#060b14;font-family:monospace;min-height:100vh;display:flex;alig
 .ctx-txt b{font-weight:500;}
 .code-block{background:#060b14;border:1px solid #1f2937;border-radius:8px;padding:14px;font-size:13px;line-height:2.2;}
 .kw{color:#c792ea;}.fn{color:#82aaff;}.str{color:#c3e88d;}.cm{color:#546e7a;}.num{color:#f78c6c;}
-input.blank{font-family:monospace;font-size:13px;background:#1f2937;border:2px solid currentColor;border-radius:4px;padding:2px 10px;min-width:155px;outline:none;vertical-align:middle;}
+input.blank{font-family:monospace;font-size:13px;background:#1f2937;border:2px solid currentColor;border-radius:4px;padding:2px 10px;min-width:80px;width:auto;max-width:100%;outline:none;vertical-align:middle;}
 input.blank:focus{opacity:.9;}
 .btns-row{display:flex;gap:10px;flex-wrap:wrap;}
 .btn-check{color:#fff;border:none;border-radius:6px;padding:9px 22px;font-size:13px;font-weight:500;cursor:pointer;font-family:monospace;letter-spacing:1px;}
@@ -503,7 +503,7 @@ var phases=[
     challenges:[
       {ctx:'O payload está camuflado numa lista. Use <b>list comprehension</b> para filtrar apenas os processos que contêm a palavra <b>"payload"</b>.',diff:'Avançado',
        code:['<span class="cm"># Lista de processos</span>','processos = [<span class="str">"svc_rede"</span>, <span class="str">"payload_x7"</span>, <span class="str">"svc_log"</span>, <span class="str">"payload_root"</span>]','<span class="cm"># Filtre os que contêm "payload"</span>','maliciosos = [p INPUT]','<span class="fn">print</span>(maliciosos)'],
-       ph:'condição da lista',answers:['for p in processos if "payload" in p',"for p in processos if 'payload' in p"],hint:'List comprehension: [expressão for item in lista if condição]. A expressão é p, a lista é processos, e a condição verifica se "payload" está em p.'},
+       ph:'complete aqui',answers:['for p in processos if "payload" in p',"for p in processos if 'payload' in p"],hint:'List comprehension: [p for p in processos if "payload" in p]. Digite exatamente: for p in processos if "payload" in p'},
       {ctx:'Para apagar o payload com segurança, defina uma <b>classe</b> chamada <b>Payload</b>. Complete a linha que inicia a definição da classe.',diff:'Avançado',
        code:['<span class="cm"># Definindo a classe do payload</span>','INPUT Payload:','&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, nome, ativo):','&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">self</span>.nome = nome','&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">self</span>.ativo = ativo','&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">def</span> <span class="fn">apagar</span>(<span class="kw">self</span>):','&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">self</span>.ativo = <span class="kw">False</span>'],
        ph:'palavra-chave',answers:['class'],hint:'Classes em Python são definidas com uma palavra-chave antes do nome. Em inglês "classe" se escreve com 5 letras.'},
@@ -703,6 +703,7 @@ function renderChallenge(){
       inp.setAttribute('autocomplete','off');inp.setAttribute('spellcheck','false');
       inp.addEventListener('keydown',function(e){if(e.key==='Enter')checkAnswer();});
       var s2=document.createElement('span');s2.innerHTML=parts[1]||'';
+      d.style.display='flex';d.style.alignItems='center';d.style.flexWrap='wrap';d.style.gap='4px';
       d.appendChild(s1);d.appendChild(inp);d.appendChild(s2);
     }else{
       d.innerHTML=line||'&nbsp;';
@@ -728,8 +729,8 @@ window.checkAnswer=function(){
   var val=inp.value.trim();
   var ph=phases[currentPhase];
   var ch=ph.challenges[currentChallenge];
-  var correct=ch.answers.map(function(a){return a.toLowerCase();});
-  var ok=correct.indexOf(val.toLowerCase())>=0;
+  var correct=ch.answers.map(function(a){return a.toLowerCase().replace(/"/g,"'");});
+  var ok=correct.indexOf(val.toLowerCase().replace(/"/g,"'"))>=0;
   var fb=document.getElementById('fb');
   if(ok){
     inp.style.borderColor='#00ff88';inp.style.color='#00ff88';inp.style.background='#0a1a10';
