@@ -535,10 +535,15 @@ var introLines=[
   {t:'[22:47:22] >> Convocando especialista de nível máximo...\n\n',c:'yellow'},
 ];
 var dialogueData=[
-  {sender:'Professor Cristiano Especialista Black Team Alves',icon:'👨‍💼',color:'#1e40af',msg:'Situação confirmada. O sistema do governo está comprometido. Precisamos de você, <span class="hl">agora</span>.'},
-  {sender:'Analista Carla (TI Gov)',icon:'👩‍💻',color:'#065f46',msg:'Confirmamos o payload. Ele tem <span class="hl">três módulos</span>: transferência bancária, destruição de dados e detonador. Temos menos de 1 hora.'},
-  {sender:'SH4D0W_X (Cracker)',icon:'💀',color:'#7f1d1d',msg:'Acharam alguém? Meu código é <span class="hl">inquebrável</span>. Aguardo a transferência. Boa sorte.'},
-  {sender:'Ministro Alves',icon:'👨‍💼',color:'#1e40af',msg:'Você é o melhor que temos. Somente um programador de elite pode reverter isso. <span class="ok">Aceita a missão?</span>'},
+  {sender:'Ministro Alves',icon:'👨‍💼',color:'#1e40af',msg:'Situação confirmada. O sistema do governo está completamente comprometido. Temos menos de uma hora antes do colapso total. Precisamos agir <span class="hl">agora</span>.'},
+  {sender:'Analista Carla (TI Gov)',icon:'👩‍💻',color:'#065f46',msg:'Confirmamos o payload. Ele possui <span class="hl">três módulos ativos</span>: transferência bancária offshore, destruição total de dados e um detonador físico. Nenhum de nossa equipe consegue neutralizá-lo.'},
+  {sender:'SH4D0W_X (Cracker)',icon:'💀',color:'#7f1d1d',msg:'Oh... mandaram buscar reforços? Que patético. Meu código é <span class="hl">inquebrável</span>. Podem tentar. O relógio já está correndo. &#128552;'},
+  {sender:'Ministro Alves',icon:'👨‍💼',color:'#1e40af',msg:'Precisamos de alguém fora do comum. Alguém que pense diferente. Contactem imediatamente o especialista em Segurança Black Team — <span class="ok">Prof. Cristiano Macêdo</span>.'},
+  {sender:'Prof. Cristiano Macêdo — Black Team',icon:'🧑‍💻',color:'#7c3aed',msg:'Recebi o briefing. A situação é grave, mas há solução. No entanto... <span class="ok">eu não sou o homem certo para isso</span>. Conheço alguém muito melhor.'},
+  {sender:'Ministro Alves',icon:'👨‍💼',color:'#1e40af',msg:'Professor, não temos tempo! Quem é essa pessoa? <span class="hl">Onde está?</span>'},
+  {sender:'Prof. Cristiano Macêdo — Black Team',icon:'🧑‍💻',color:'#7c3aed',msg:'É um estudante da <span class="ok">Turma do IFMA — 2026</span>. O melhor que já formei. Mente brilhante, código cirúrgico. Se alguém pode neutralizar esse payload... <span class="ok">é essa pessoa</span>.'},
+  {sender:'Analista Carla (TI Gov)',icon:'👩‍💻',color:'#065f46',msg:'Um estudante?! Ministro, com todo o respeito — <span class="hl">temos certeza disso?</span> O sistema inteiro do governo está em jogo.'},
+  {sender:'Prof. Cristiano Macêdo — Black Team',icon:'🧑‍💻',color:'#7c3aed',msg:'Tenho certeza absoluta. Confie em mim. Estou contactando agora. <span class="ok">Agente, sua missão está prestes a começar.</span>'},
 ];
 
 function sleep(ms){return new Promise(function(r){setTimeout(r,ms);});}
@@ -579,13 +584,14 @@ async function runIntro(){
   showScreen('dialogues');
   var cont=document.getElementById('dialogues-area');
   for(var i=0;i<dialogueData.length;i++){
-    await sleep(600);
+    await sleep(900);
     var d=dialogueData[i];
     var box=document.createElement('div');
     box.className='msg-box';
     box.innerHTML='<div class="avatar" style="background:'+d.color+'22;border-color:'+d.color+'44;">'+d.icon+'</div><div class="msg-content"><div class="msg-sender">'+d.sender+'</div><div class="msg-text">'+d.msg+'</div></div>';
     cont.appendChild(box);
-    await sleep(1800);
+    cont.scrollTop=cont.scrollHeight;
+    await sleep(4500);
   }
   var h2=document.getElementById('hint2');
   h2.style.display='flex';
