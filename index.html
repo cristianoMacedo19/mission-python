@@ -123,9 +123,40 @@ input.blank:focus{opacity:.9;}
 #refreshBtn:hover{border-color:#6b7280;color:#9ca3af;}
 .pulse{animation:pu 1.2s ease-in-out infinite;}
 @keyframes pu{0%,100%{opacity:1}50%{opacity:0.2}}
+
+/* ── SPLASH ── */
+#splash{position:fixed;inset:0;background:#060b14;z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.5rem;cursor:pointer;}
+#splash .sp-caller{font-size:11px;color:#546e7a;letter-spacing:3px;margin-bottom:.5rem;}
+#splash .sp-avatar{width:72px;height:72px;border-radius:50%;background:#0d1220;border:2px solid #00ff8844;display:flex;align-items:center;justify-content:center;font-size:32px;animation:pu 1.4s ease-in-out infinite;}
+#splash .sp-name{font-size:16px;color:#d1d5db;letter-spacing:1px;font-weight:500;}
+#splash .sp-role{font-size:11px;color:#546e7a;letter-spacing:2px;}
+#splash .sp-btn{background:transparent;border:1px solid #00ff8877;color:#00ff88;border-radius:8px;padding:13px 38px;font-size:13px;font-family:monospace;letter-spacing:2px;cursor:pointer;margin-top:.5rem;}
+#splash .sp-btn:hover{background:#00ff8811;border-color:#00ff88;}
+#splash .sp-sub{font-size:11px;color:#374151;letter-spacing:1px;}
+/* ── SPLASH 2 — Dois minutos antes ── */
+#splash2{position:fixed;inset:0;background:#060b14;z-index:998;display:none;flex-direction:column;align-items:center;justify-content:center;gap:1rem;}
+#splash2 .s2-label{font-size:11px;color:#546e7a;letter-spacing:3px;}
+#splash2 .s2-text{font-size:28px;color:#d1d5db;letter-spacing:2px;text-align:center;}
+#splash2 .s2-bar{width:200px;height:2px;background:#1f2937;border-radius:2px;overflow:hidden;margin-top:.5rem;}
+#splash2 .s2-prog{height:100%;background:#00ff88;width:0%;transition:width 3s linear;}
 </style>
 </head>
 <body>
+
+<div id="splash">
+  <div class="sp-caller">CHAMADA RECEBIDA</div>
+  <div class="sp-avatar">&#129489;&#8205;&#128187;</div>
+  <div class="sp-name">Prof. Cristiano Macêdo</div>
+  <div class="sp-role">BLACK TEAM — SEGURANÇA GOV</div>
+  <button class="sp-btn" onclick="atenderChamado()">[ ATENDER CHAMADO ]</button>
+  <div class="sp-sub">toque para atender</div>
+</div>
+
+<div id="splash2">
+  <div class="s2-label">— FLASHBACK —</div>
+  <div class="s2-text">Dois minutos antes...</div>
+  <div class="s2-bar"><div class="s2-prog" id="s2prog"></div></div>
+</div>
 
 <div id="app">
 
@@ -577,7 +608,6 @@ async function typeWriter(parts,el,delay){
 
 async function runIntro(){
   await sleep(300);
-  startMusic();
   var el=document.getElementById('typeArea');
   await typeWriter(introLines,el,22);
   var h1=document.getElementById('hint1');
@@ -594,7 +624,7 @@ async function runIntro(){
     box.innerHTML='<div class="avatar" style="background:'+d.color+'22;border-color:'+d.color+'44;">'+d.icon+'</div><div class="msg-content"><div class="msg-sender">'+d.sender+'</div><div class="msg-text">'+d.msg+'</div></div>';
     cont.appendChild(box);
     cont.scrollTop=cont.scrollHeight;
-    await sleep(10000);
+    await sleep(9000);
   }
   var h2=document.getElementById('hint2');
   h2.style.display='flex';
@@ -832,7 +862,31 @@ window.doLogin=function(){
 };
 
 // ══ START ══
-runIntro();
+window.atenderChamado = function(){
+  // Fecha splash 1
+  var s1 = document.getElementById('splash');
+  s1.style.transition = 'opacity 0.4s';
+  s1.style.opacity = '0';
+  setTimeout(function(){ s1.style.display = 'none'; }, 400);
+
+  // Abre splash 2 — "Dois minutos antes..."
+  var s2 = document.getElementById('splash2');
+  s2.style.display = 'flex';
+  setTimeout(function(){
+    document.getElementById('s2prog').style.width = '100%';
+  }, 50);
+
+  // Após 3s fecha splash2 e inicia a intro com som
+  setTimeout(function(){
+    s2.style.transition = 'opacity 0.5s';
+    s2.style.opacity = '0';
+    setTimeout(function(){
+      s2.style.display = 'none';
+      startMusic();
+      runIntro();
+    }, 500);
+  }, 3000);
+};
 </script>
 </body>
 </html>
