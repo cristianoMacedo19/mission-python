@@ -68,7 +68,7 @@ body{background:#060b14;font-family:monospace;min-height:100vh;display:flex;alig
 .ctx-label{font-size:10px;letter-spacing:1px;margin-bottom:5px;}
 .ctx-txt{font-size:12px;color:#9ca3af;line-height:1.6;}
 .ctx-txt b{font-weight:500;}
-.code-block{background:#060b14;border:1px solid #1f2937;border-radius:8px;padding:14px;font-size:13px;line-height:2.2;}
+.code-block{background:#060b14;border:1px solid #1f2937;border-radius:8px;padding:14px;font-size:13px;line-height:2.2;}.code-block div{color:#d1d5db;white-space:nowrap;}
 .kw{color:#c792ea;}.fn{color:#82aaff;}.str{color:#c3e88d;}.cm{color:#546e7a;}.num{color:#f78c6c;}
 input.blank{font-family:monospace;font-size:13px;background:#1f2937;border:2px solid currentColor;border-radius:4px;padding:2px 10px;min-width:80px;width:auto;max-width:100%;outline:none;vertical-align:middle;}
 input.blank:focus{opacity:.9;}
@@ -439,13 +439,13 @@ var phases=[
     btnLabel:'[ IR PARA FASE 2 ] →',
     challenges:[
       {ctx:'O sistema pede autenticação. Crie uma variável chamada <b>senha_acesso</b> e atribua a ela o valor numérico <b>2048</b>.',diff:'Básico',
-       code:['<span class="cm"># Autenticação — defina a variável correta</span>','INPUT = <span class="num">2048</span>','<span class="kw">if</span> senha_acesso == <span class="num">2048</span>:','&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(<span class="str">"Acesso liberado"</span>)'],
+       code:['<span class="cm"># Autenticação — defina a variável correta</span>','INPUT = <span class="num">2048</span>','<span class="kw">if</span> senha_acesso == <span class="num">2048</span>:','    <span class="fn">print</span>(<span class="str">&quot;Acesso liberado&quot;</span>)'],
        ph:'nome da variável',answers:['senha_acesso'],hint:'Em Python você cria uma variável escrevendo o nome dela seguido de = e o valor. O nome pedido está em negrito no contexto.'},
       {ctx:'Encontrou um verificador de ameaça incompleto. Falta a palavra-chave da condição alternativa quando a primeira é falsa.',diff:'Básico',
-       code:['<span class="cm"># Verificador de ameaça</span>','nivel = <span class="num">9</span>','<span class="kw">if</span> nivel >= <span class="num">10</span>:','&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(<span class="str">"Crítico"</span>)','INPUT nivel >= <span class="num">5</span>:','&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(<span class="str">"Alto"</span>)','<span class="kw">else</span>:','&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(<span class="str">"Normal"</span>)'],
+       code:['<span class="cm"># Verificador de ameaça</span>','nivel = <span class="num">9</span>','<span class="kw">if</span> nivel >= <span class="num">10</span>:','    <span class="fn">print</span>(<span class="str">&quot;Crítico&quot;</span>)','INPUT nivel >= <span class="num">5</span>:','    <span class="fn">print</span>(<span class="str">&quot;Alto&quot;</span>)','<span class="kw">else</span>:','    <span class="fn">print</span>(<span class="str">&quot;Normal&quot;</span>)'],
        ph:'palavra-chave',answers:['elif'],hint:'Usamos if para a primeira condição, else para o caso final, e uma terceira palavra para condições do meio — junção de "else"+"if".'},
       {ctx:'Localizou o módulo de transferência. Complete a função que verifica o saldo. Falta a palavra-chave que devolve um valor.',diff:'Intermediário',
-       code:['<span class="cm"># Bloqueio da transferência</span>','<span class="kw">def</span> <span class="fn">verificar</span>(saldo, valor):','&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> saldo >= valor:','&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;INPUT <span class="str">"BLOQUEADO"</span>','&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">else</span>:','&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> <span class="str">"LIBERADO"</span>'],
+       code:['<span class="cm"># Bloqueio da transferência</span>','<span class="kw">def</span> <span class="fn">verificar</span>(saldo, valor):','    <span class="kw">if</span> saldo >= valor:','        INPUT <span class="str">&quot;BLOQUEADO&quot;</span>','    <span class="kw">else</span>:','        <span class="kw">return</span> <span class="str">&quot;LIBERADO&quot;</span>'],
        ph:'palavra-chave',answers:['return'],hint:'Funções em Python usam uma palavra-chave para enviar um valor de volta. Em inglês significa "retornar".'},
     ]
   },
@@ -460,13 +460,13 @@ var phases=[
     btnLabel:'[ IR PARA FASE 3 ] →',
     challenges:[
       {ctx:'O cracker marcou arquivos para deletar. Use o método correto para <b>adicionar</b> o arquivo <b>"backup_seguro.db"</b> à lista de proteção.',diff:'Básico',
-       code:['<span class="cm"># Lista de arquivos a proteger</span>','protegidos = [<span class="str">"gov_financas.db"</span>, <span class="str">"cidadaos.db"</span>]','<span class="cm"># Adicione "backup_seguro.db"</span>','protegidos.INPUT(<span class="str">"backup_seguro.db"</span>)','<span class="fn">print</span>(protegidos)'],
+       code:['<span class="cm"># Lista de arquivos a proteger</span>','protegidos = [<span class="str">&quot;gov_financas.db&quot;</span>, <span class="str">&quot;cidadaos.db&quot;</span>]','<span class="cm"># Adicione "backup_seguro.db"</span>','protegidos.INPUT(<span class="str">&quot;backup_seguro.db&quot;</span>)','<span class="fn">print</span>(protegidos)'],
        ph:'método',answers:['append'],hint:'Listas têm um método para adicionar um item ao final. Começa com "a" e em inglês significa "anexar".'},
       {ctx:'Use um <b>loop</b> para percorrer cada servidor da lista e exibir uma mensagem de proteção.',diff:'Intermediário',
-       code:['<span class="cm"># Servidores em risco</span>','servidores = [<span class="str">"SRV-01"</span>, <span class="str">"SRV-02"</span>, <span class="str">"SRV-03"</span>]','INPUT servidor <span class="kw">in</span> servidores:','&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(<span class="str">"Protegendo: "</span> + servidor)'],
+       code:['<span class="cm"># Servidores em risco</span>','servidores = [<span class="str">&quot;SRV-01&quot;</span>, <span class="str">&quot;SRV-02&quot;</span>, <span class="str">&quot;SRV-03&quot;</span>]','INPUT servidor <span class="kw">in</span> servidores:','    <span class="fn">print</span>(<span class="str">&quot;Protegendo: &quot;</span> + servidor)'],
        ph:'palavra-chave',answers:['for'],hint:'Para percorrer cada item de uma lista usamos um tipo de loop. A palavra tem 3 letras e em inglês significa "para".'},
       {ctx:'O cracker escondeu código numa string. Use o método correto para converter para <b>letras maiúsculas</b> e identificar o código oculto.',diff:'Intermediário',
-       code:['<span class="cm"># Decodificando mensagem oculta</span>','mensagem = <span class="str">"payload_ativo_x7f"</span>','<span class="cm"># Converta para maiúsculas</span>','decodificada = mensagem.INPUT()','<span class="fn">print</span>(decodificada)'],
+       code:['<span class="cm"># Decodificando mensagem oculta</span>','mensagem = <span class="str">&quot;payload_ativo_x7f&quot;</span>','<span class="cm"># Converta para maiúsculas</span>','decodificada = mensagem.INPUT()','<span class="fn">print</span>(decodificada)'],
        ph:'método',answers:['upper'],hint:'Strings têm um método para converter tudo para maiúsculas. Em inglês "upper case" — use só a primeira palavra.'},
     ]
   },
@@ -481,13 +481,13 @@ var phases=[
     btnLabel:'[ FASE FINAL ] →',
     challenges:[
       {ctx:'O detonador usa um dicionário. Acesse o valor da chave <b>"codigo"</b> para obter a sequência de desativação.',diff:'Intermediário',
-       code:['<span class="cm"># Dicionário do detonador</span>','detonador = {<span class="str">"codigo"</span>: <span class="num">7749</span>, <span class="str">"ativo"</span>: <span class="kw">True</span>}','<span class="cm"># Acesse o valor da chave "codigo"</span>','sequencia = detonador[INPUT]','<span class="fn">print</span>(<span class="str">"Código:"</span>, sequencia)'],
+       code:['<span class="cm"># Dicionário do detonador</span>','detonador = {<span class="str">&quot;codigo&quot;</span>: <span class="num">7749</span>, <span class="str">&quot;ativo&quot;</span>: <span class="kw">True</span>}','<span class="cm"># Acesse o valor da chave "codigo"</span>','sequencia = detonador[INPUT]','<span class="fn">print</span>(<span class="str">&quot;Código:&quot;</span>, sequencia)'],
        ph:'chave aqui',answers:['"codigo"',"'codigo'"],hint:'Para acessar um valor num dicionário use colchetes com a chave entre aspas. A chave é "codigo" — inclua as aspas.'},
       {ctx:'A função de desativação precisa de dois parâmetros: <b>codigo</b> e <b>tentativas</b>. Complete o cabeçalho da função.',diff:'Intermediário',
-       code:['<span class="cm"># Função de desativação</span>','<span class="kw">def</span> <span class="fn">desativar</span>INPUT:','&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> codigo == <span class="num">7749</span> <span class="kw">and</span> tentativas > <span class="num">0</span>:','&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> <span class="str">"BOMBA DESATIVADA"</span>','&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> <span class="str">"FALHA"</span>'],
+       code:['<span class="cm"># Função de desativação</span>','<span class="kw">def</span> <span class="fn">desativar</span>INPUT:','    <span class="kw">if</span> codigo == <span class="num">7749</span> <span class="kw">and</span> tentativas > <span class="num">0</span>:','        <span class="kw">return</span> <span class="str">&quot;BOMBA DESATIVADA&quot;</span>','    <span class="kw">return</span> <span class="str">&quot;FALHA&quot;</span>'],
        ph:'(parâmetros)',answers:['(codigo, tentativas)','(codigo,tentativas)'],hint:'Parâmetros ficam entre parênteses após o nome, separados por vírgula. Os dois são: codigo e tentativas.'},
       {ctx:'O módulo pode gerar um <b>ValueError</b>. O bloco try já está pronto — complete a linha que captura esse erro específico.',diff:'Avançado',
-       code:['<span class="cm"># Capturando erros</span>','<span class="kw">try</span>:','&nbsp;&nbsp;&nbsp;&nbsp;resultado = desativar(<span class="num">7749</span>, <span class="num">3</span>)','&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(resultado)','<span class="kw">except</span> INPUT <span class="kw">as</span> e:','&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(<span class="str">"Erro:"</span>, e)'],
+       code:['<span class="cm"># Capturando erros</span>','<span class="kw">try</span>:','    resultado = desativar(<span class="num">7749</span>, <span class="num">3</span>)','    <span class="fn">print</span>(resultado)','<span class="kw">except</span> INPUT <span class="kw">as</span> e:','    <span class="fn">print</span>(<span class="str">&quot;Erro:&quot;</span>, e)'],
        ph:'tipo do erro',answers:['valueerror','ValueError'],hint:'O except pode capturar tipos específicos de erro. O erro mencionado no contexto é exatamente o que deve ser digitado.'},
     ]
   },
@@ -502,13 +502,13 @@ var phases=[
     btnLabel:'[ VER RESULTADO FINAL ] →',
     challenges:[
       {ctx:'O payload está camuflado numa lista. Use <b>list comprehension</b> para filtrar apenas os processos que contêm a palavra <b>"payload"</b>.',diff:'Avançado',
-       code:['<span class="cm"># Lista de processos</span>','processos = [<span class="str">"svc_rede"</span>, <span class="str">"payload_x7"</span>, <span class="str">"svc_log"</span>, <span class="str">"payload_root"</span>]','<span class="cm"># Filtre os que contêm "payload"</span>','maliciosos = [p INPUT]','<span class="fn">print</span>(maliciosos)'],
+       code:['<span class="cm"># Lista de processos</span>','processos = [<span class="str">&quot;svc_rede&quot;</span>, <span class="str">&quot;payload_x7&quot;</span>, <span class="str">&quot;svc_log&quot;</span>, <span class="str">&quot;payload_root&quot;</span>]','<span class="cm"># Filtre os que contêm "payload"</span>','maliciosos = [p INPUT]','<span class="fn">print</span>(maliciosos)'],
        ph:'complete aqui',answers:['for p in processos if "payload" in p',"for p in processos if 'payload' in p"],hint:'List comprehension: [p for p in processos if "payload" in p]. Digite exatamente: for p in processos if "payload" in p'},
       {ctx:'Para apagar o payload com segurança, defina uma <b>classe</b> chamada <b>Payload</b>. Complete a linha que inicia a definição da classe.',diff:'Avançado',
-       code:['<span class="cm"># Definindo a classe do payload</span>','INPUT Payload:','&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, nome, ativo):','&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">self</span>.nome = nome','&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">self</span>.ativo = ativo','&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">def</span> <span class="fn">apagar</span>(<span class="kw">self</span>):','&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">self</span>.ativo = <span class="kw">False</span>'],
+       code:['<span class="cm"># Definindo a classe do payload</span>','INPUT Payload:','    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, nome, ativo):','        <span class="kw">self</span>.nome = nome','        <span class="kw">self</span>.ativo = ativo','    <span class="kw">def</span> <span class="fn">apagar</span>(<span class="kw">self</span>):','        <span class="kw">self</span>.ativo = <span class="kw">False</span>'],
        ph:'palavra-chave',answers:['class'],hint:'Classes em Python são definidas com uma palavra-chave antes do nome. Em inglês "classe" se escreve com 5 letras.'},
       {ctx:'O payload tem uma versão aprimorada <b>PayloadCritico</b> que <b>herda</b> de <b>Payload</b>. Complete a definição da subclasse.',diff:'Avançado',
-       code:['<span class="cm"># Subclasse que herda de Payload</span>','<span class="kw">class</span> <span class="fn">PayloadCritico</span>INPUT:','&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, nome):','&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">super</span>().__init__(nome, <span class="kw">True</span>)','&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">self</span>.nivel = <span class="str">"CRÍTICO"</span>'],
+       code:['<span class="cm"># Subclasse que herda de Payload</span>','<span class="kw">class</span> <span class="fn">PayloadCritico</span>INPUT:','    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, nome):','        <span class="fn">super</span>().__init__(nome, <span class="kw">True</span>)','        <span class="kw">self</span>.nivel = <span class="str">&quot;CRÍTICO&quot;</span>'],
        ph:'herança',answers:['(Payload)','(payload)'],hint:'Para herdar de outra classe, coloque o nome da classe pai entre parênteses após o nome da subclasse. A classe pai é Payload.'},
     ]
   }
@@ -693,20 +693,24 @@ function renderChallenge(){
   block.innerHTML='';
   ch.code.forEach(function(line){
     var d=document.createElement('div');
+    d.style.cssText='color:#d1d5db;min-height:1.4em;';
     if(line.indexOf('INPUT')>=0){
       var parts=line.split('INPUT');
-      var s1=document.createElement('span');s1.innerHTML=parts[0];
+      var s1=document.createElement('span');
+      s1.style.color='#d1d5db';
+      s1.innerHTML=parts[0];
       var inp=document.createElement('input');
       inp.type='text';inp.className='blank';inp.id='userInput';
       inp.style.color=ph.color;inp.style.borderColor=ph.color;
       inp.placeholder=ch.ph;
       inp.setAttribute('autocomplete','off');inp.setAttribute('spellcheck','false');
       inp.addEventListener('keydown',function(e){if(e.key==='Enter')checkAnswer();});
-      var s2=document.createElement('span');s2.innerHTML=parts[1]||'';
-      d.style.display='flex';d.style.alignItems='center';d.style.flexWrap='wrap';d.style.gap='4px';
+      var s2=document.createElement('span');
+      s2.style.color='#d1d5db';
+      s2.innerHTML=parts[1]||'';
       d.appendChild(s1);d.appendChild(inp);d.appendChild(s2);
     }else{
-      d.innerHTML=line||'&nbsp;';
+      d.innerHTML=line||'&#8203;';
     }
     block.appendChild(d);
   });
