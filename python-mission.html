@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Python Mission</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#060b14;font-family:monospace;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem;}
+#app{width:100%;max-width:860px;background:#0a0f1a;border-radius:14px;overflow:hidden;box-shadow:0 0 40px #00000099;}
+.screen{display:none;}
+.screen.active{display:block;}
+
+/* ── TOPBAR ── */
+.topbar{background:#0d1220;border-bottom:1px solid #1f2937;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;}
+.dots{display:flex;gap:6px;}
+.dot{width:11px;height:11px;border-radius:50%;}
+
+/* ── INTRO ── */
+#intro{background:#0a0f1a;}
+.intro-body{padding:2rem;min-height:560px;display:flex;flex-direction:column;}
+.typewriter{color:#00ff88;font-size:13px;line-height:1.9;white-space:pre-wrap;flex:1;}
+.typewriter .red{color:#ff4444;}
+.typewriter .yellow{color:#ffcc00;}
+.typewriter .cyan{color:#00ccff;}
+.typewriter .white{color:#fff;}
+.countdown-wrap{display:flex;align-items:center;gap:10px;margin-top:1.5rem;font-size:12px;color:#4b5563;}
+.countdown-wrap svg{transform:rotate(-90deg);}
+.cring-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10px;color:#6b7280;}
+.cring-rel{position:relative;width:28px;height:28px;flex-shrink:0;}
+
+/* ── DIÁLOGOS ── */
+#dialogues-area{padding:2rem;min-height:560px;display:flex;flex-direction:column;gap:1rem;}
+.msg-box{display:flex;gap:12px;align-items:flex-start;animation:fadeIn .4s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;border:2px solid #1f2937;}
+.msg-content{background:#111827;border:.5px solid #1f2937;border-radius:8px;padding:10px 14px;max-width:85%;}
+.msg-sender{font-size:11px;color:#4b5563;margin-bottom:4px;}
+.msg-text{font-size:13px;color:#d1d5db;line-height:1.6;}
+.msg-text .hl{color:#ff4444;font-weight:500;}
+.msg-text .ok{color:#00ff88;font-weight:500;}
+
+/* ── ACEITAR MISSÃO ── */
+#accept-screen{padding:2rem;min-height:560px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.5rem;}
+.mission-card{background:#111827;border:1px solid #ff4444;border-radius:12px;padding:2rem;max-width:440px;width:100%;}
+.mission-title{color:#ff4444;font-size:15px;font-weight:500;margin-bottom:.5rem;letter-spacing:2px;}
+.mission-desc{color:#9ca3af;font-size:13px;line-height:1.7;margin-bottom:1.25rem;}
+.mission-stakes{display:flex;flex-direction:column;gap:7px;margin-bottom:1.25rem;}
+.stake{font-size:12px;color:#d1d5db;}
+.name-wrap label{display:block;font-size:11px;color:#6b7280;margin-bottom:5px;letter-spacing:1px;}
+.name-wrap input{width:100%;background:#0a0f1a;border:1px solid #374151;border-radius:6px;color:#00ff88;font-family:monospace;font-size:14px;padding:10px 14px;outline:none;}
+.name-wrap input:focus{border-color:#00ff88;}
+.btn-accept{background:#ff4444;color:#fff;border:none;border-radius:8px;padding:12px 2rem;font-size:14px;font-weight:500;cursor:pointer;width:100%;letter-spacing:1px;font-family:monospace;margin-top:1rem;}
+.btn-accept:hover:not(:disabled){background:#cc2222;}
+.btn-accept:disabled{background:#374151;color:#6b7280;cursor:not-allowed;}
+
+/* ── FASES ── */
+#phase-screen{min-height:600px;}
+.phase-main{display:flex;min-height:556px;}
+.sidebar{width:185px;background:#0d1220;border-right:1px solid #1f2937;padding:1rem;display:flex;flex-direction:column;flex-shrink:0;}
+.stitle{font-size:10px;color:#6b7280;letter-spacing:2px;margin-bottom:8px;}
+.ci{display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:6px;margin-bottom:3px;font-size:12px;color:#6b7280;}
+.ci.active{background:#1f2937;}
+.ci.done{color:#374151;}
+.ci-num{width:17px;height:17px;border-radius:50%;border:1px solid #374151;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;}
+.phase-content{flex:1;padding:20px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;}
+.ctx-box{border-radius:8px;padding:12px 14px;}
+.ctx-label{font-size:10px;letter-spacing:1px;margin-bottom:5px;}
+.ctx-txt{font-size:12px;color:#9ca3af;line-height:1.6;}
+.ctx-txt b{font-weight:500;}
+.code-block{background:#060b14;border:1px solid #1f2937;border-radius:8px;padding:14px;font-size:13px;line-height:2.2;}
+.kw{color:#c792ea;}.fn{color:#82aaff;}.str{color:#c3e88d;}.cm{color:#546e7a;}.num{color:#f78c6c;}
+input.blank{font-family:monospace;font-size:13px;background:#1f2937;border:2px solid currentColor;border-radius:4px;padding:2px 10px;min-width:155px;outline:none;vertical-align:middle;}
+input.blank:focus{opacity:.9;}
+.btns-row{display:flex;gap:10px;flex-wrap:wrap;}
+.btn-check{color:#fff;border:none;border-radius:6px;padding:9px 22px;font-size:13px;font-weight:500;cursor:pointer;font-family:monospace;letter-spacing:1px;}
+.btn-hint{background:transparent;border:1px solid #374151;color:#6b7280;border-radius:6px;padding:9px 14px;font-size:12px;cursor:pointer;font-family:monospace;}
+.btn-hint:hover{color:#9ca3af;border-color:#6b7280;}
+.fb{font-size:13px;padding:8px 12px;border-radius:6px;display:none;}
+.fb.ok{background:#0a1a10;border:1px solid #00ff8844;color:#00ff88;display:block;}
+.fb.err{background:#1a0f0f;border:1px solid #ff444444;color:#ff6b6b;display:block;}
+.hint-box{background:#111827;border:1px solid #1f2937;border-radius:6px;padding:10px 14px;font-size:12px;color:#9ca3af;line-height:1.6;display:none;}
+.hint-box.show{display:block;}
+.badge-row{display:flex;gap:8px;flex-wrap:wrap;}
+.badge{background:#1f2937;border-radius:4px;padding:3px 10px;font-size:11px;color:#9ca3af;}
+.badge b{font-weight:500;}
+.phase-done{display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:2rem;text-align:center;min-height:400px;}
+.phase-done.show{display:flex;}
+.pstats{background:#0d1220;border:1px solid #1f2937;border-radius:8px;padding:14px 20px;width:100%;max-width:340px;}
+.prow{display:flex;justify-content:space-between;font-size:13px;padding:5px 0;color:#9ca3af;border-bottom:.5px solid #1f2937;}
+.prow:last-child{border-bottom:none;}
+.prow span{color:#d1d5db;}
+.btn-next{color:#fff;border:none;border-radius:8px;padding:12px 2rem;font-size:14px;font-weight:500;cursor:pointer;font-family:monospace;letter-spacing:1px;}
+
+/* ── PAINEL ADMIN ── */
+#admin-screen{min-height:600px;}
+#admin-login{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:560px;gap:1rem;padding:2rem;}
+.acard{background:#0d1220;border:1px solid #374151;border-radius:12px;padding:2rem;width:100%;max-width:360px;display:flex;flex-direction:column;gap:1rem;}
+.afield label{font-size:10px;color:#6b7280;letter-spacing:1px;display:block;margin-bottom:5px;}
+.afield input{width:100%;background:#1f2937;border:1px solid #374151;border-radius:6px;color:#d1d5db;font-family:monospace;font-size:13px;padding:9px 12px;outline:none;}
+.afield input:focus{border-color:#6366f1;}
+#btnLogin{background:#6366f1;color:#fff;border:none;border-radius:8px;padding:10px;font-size:13px;font-weight:500;cursor:pointer;font-family:monospace;width:100%;}
+#loginErr{font-size:12px;color:#ff6b6b;text-align:center;display:none;}
+#admin-dash{display:none;flex-direction:column;}
+.dash-top{background:#0d1220;border-bottom:1px solid #1f2937;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;}
+.dash-body{padding:20px;display:flex;flex-direction:column;gap:16px;}
+.sec-title{font-size:10px;color:#6b7280;letter-spacing:2px;margin-bottom:10px;}
+.sum-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;}
+.sum-card{background:#0d1220;border:1px solid #1f2937;border-radius:8px;padding:12px 14px;}
+.sum-label{font-size:10px;color:#6b7280;margin-bottom:4px;}
+.sum-val{font-size:22px;font-weight:500;}
+.atbl{background:#0d1220;border:1px solid #1f2937;border-radius:8px;overflow:hidden;}
+.atbl-head{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;padding:8px 14px;font-size:10px;color:#6b7280;letter-spacing:1px;background:#060b14;}
+.atbl-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;padding:10px 14px;font-size:12px;border-top:.5px solid #1f2937;align-items:center;}
+.atbl-row:hover{background:#0d1220;}
+.tag-ok{background:#0a1a10;color:#00ff88;border-radius:4px;padding:2px 7px;font-size:11px;}
+.tag-warn{background:#1a1000;color:#ffcc00;border-radius:4px;padding:2px 7px;font-size:11px;}
+.obs-area{background:#0d1220;border:1px solid #1f2937;border-radius:8px;padding:14px;}
+.obs-item{font-size:12px;color:#9ca3af;line-height:1.8;padding-left:12px;border-left:2px solid #374151;margin-bottom:8px;}
+.obs-item b{color:#d1d5db;}
+.no-data{font-size:13px;color:#374151;text-align:center;padding:2rem;}
+#refreshBtn{background:transparent;border:1px solid #374151;color:#6b7280;border-radius:6px;padding:6px 14px;font-size:11px;cursor:pointer;font-family:monospace;}
+#refreshBtn:hover{border-color:#6b7280;color:#9ca3af;}
+.pulse{animation:pu 1.2s ease-in-out infinite;}
+@keyframes pu{0%,100%{opacity:1}50%{opacity:0.2}}
+</style>
+</head>
+<body>
+
+<div id="app">
+
+<!-- ══ INTRO ══ -->
+<div id="intro" class="screen active">
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div class="dots">
+        <div class="dot" style="background:#ff5f57"></div>
+        <div class="dot" style="background:#ffbd2e"></div>
+        <div class="dot" style="background:#28c840"></div>
+      </div>
+      <span style="font-size:11px;color:#6b7280;letter-spacing:1px;">GOV-CORE-SYSTEM :: INTRUSION LOG</span>
+    </div>
+    <button onclick="goAdmin()" style="background:transparent;border:1px solid #1f2937;color:#374151;border-radius:6px;padding:4px 12px;font-size:11px;cursor:pointer;font-family:monospace;">Admin</button>
+  </div>
+  <div class="intro-body">
+    <div class="typewriter" id="typeArea"></div>
+    <div class="countdown-wrap" id="hint1" style="display:none;">
+      <div class="cring-rel">
+        <svg width="28" height="28" viewBox="0 0 28 28">
+          <circle cx="14" cy="14" r="11" fill="none" stroke="#1f2937" stroke-width="2"/>
+          <circle id="ring1" cx="14" cy="14" r="11" fill="none" stroke="#374151" stroke-width="2" stroke-dasharray="69.1" stroke-dashoffset="0"/>
+        </svg>
+        <div class="cring-num" id="rnum1">15</div>
+      </div>
+      <span>leia com atenção — próxima cena em breve</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══ DIÁLOGOS ══ -->
+<div id="dialogues" class="screen">
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div class="dots">
+        <div class="dot" style="background:#ff5f57"></div>
+        <div class="dot" style="background:#ffbd2e"></div>
+        <div class="dot" style="background:#28c840"></div>
+      </div>
+      <span style="font-size:11px;color:#6b7280;letter-spacing:1px;">SALA DE SITUAÇÃO :: MINISTÉRIO DA TECNOLOGIA</span>
+    </div>
+  </div>
+  <div id="dialogues-area"></div>
+  <div class="countdown-wrap" id="hint2" style="display:none;padding:0 2rem 1.5rem;">
+    <div class="cring-rel">
+      <svg width="28" height="28" viewBox="0 0 28 28">
+        <circle cx="14" cy="14" r="11" fill="none" stroke="#1f2937" stroke-width="2"/>
+        <circle id="ring2" cx="14" cy="14" r="11" fill="none" stroke="#374151" stroke-width="2" stroke-dasharray="69.1" stroke-dashoffset="0"/>
+      </svg>
+      <div class="cring-num" id="rnum2">15</div>
+    </div>
+    <span>tela de missão em breve</span>
+  </div>
+</div>
+
+<!-- ══ ACEITAR MISSÃO ══ -->
+<div id="accept" class="screen">
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div class="dots">
+        <div class="dot" style="background:#ff5f57"></div>
+        <div class="dot" style="background:#ffbd2e"></div>
+        <div class="dot" style="background:#28c840"></div>
+      </div>
+      <span style="font-size:11px;color:#ff4444;letter-spacing:1px;">MISSÃO CONFIDENCIAL</span>
+    </div>
+  </div>
+  <div id="accept-screen">
+    <div class="mission-card">
+      <div class="mission-title">[ PROTOCOLO DE EMERGÊNCIA ]</div>
+      <div class="mission-desc">Um cracker invadiu os sistemas centrais do governo. Você é o único profissional capaz de reverter o ataque. Cada segundo conta.</div>
+      <div class="mission-stakes">
+        <div class="stake">&#9889; R$ 1.000.000 em risco de transferência</div>
+        <div class="stake">&#128190; Dados críticos do governo ameaçados</div>
+        <div class="stake">&#128165; Bomba instalada em repartição pública</div>
+      </div>
+      <div class="name-wrap">
+        <label>SEU NOME, AGENTE</label>
+        <input type="text" id="nameInput" placeholder="Digite seu nome..." maxlength="30"/>
+      </div>
+      <button class="btn-accept" id="btnAccept" disabled onclick="startGame()">[ ACEITAR MISSÃO ]</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FASES ══ -->
+<div id="phase-screen" class="screen">
+  <div class="topbar" id="phase-topbar">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div class="dots">
+        <div class="dot" style="background:#ff5f57"></div>
+        <div class="dot" style="background:#ffbd2e"></div>
+        <div class="dot" style="background:#28c840"></div>
+      </div>
+      <span style="font-size:11px;color:#6b7280;letter-spacing:1px;" id="phaseBarTitle">FASE 1</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span class="pulse" id="phaseDot" style="font-size:14px;">&#9679;</span>
+      <span style="font-size:11px;color:#6b7280;">TEMPO:</span>
+      <span style="font-size:13px;font-weight:500;min-width:44px;" id="timerVal">58:00</span>
+    </div>
+  </div>
+  <div class="phase-main">
+    <div class="sidebar" id="sidebar">
+      <div id="sidebar-challenges"></div>
+      <div style="margin-top:auto;">
+        <div id="sidebar-history" style="margin-bottom:10px;"></div>
+        <div class="stitle">ESTA FASE</div>
+        <div style="font-size:24px;font-weight:500;" id="scoreDisplay">0</div>
+        <div style="font-size:11px;color:#6b7280;margin-bottom:10px;">pontos</div>
+        <div class="stitle">ERROS</div>
+        <div style="font-size:24px;color:#ff4444;font-weight:500;" id="errDisplay">0</div>
+        <div style="font-size:11px;color:#6b7280;">erros</div>
+      </div>
+    </div>
+    <div class="phase-content">
+      <div id="quizArea">
+        <div class="ctx-box" id="ctxBox">
+          <div class="ctx-label" id="ctxLabel">SITUAÇÃO</div>
+          <div class="ctx-txt" id="ctxTxt"></div>
+        </div>
+        <div class="badge-row">
+          <div class="badge">Desafio <b id="chalNum">1</b> de 3</div>
+          <div class="badge">Dificuldade: <b id="diffLabel">Básico</b></div>
+        </div>
+        <div style="font-size:10px;color:#6b7280;letter-spacing:1px;">COMPLETE O CÓDIGO:</div>
+        <div class="code-block" id="codeBlock"></div>
+        <div class="hint-box" id="hintBox"></div>
+        <div class="btns-row">
+          <button class="btn-check" id="btnCheck" onclick="checkAnswer()">[ VERIFICAR ]</button>
+          <button class="btn-hint" onclick="showHint()">Dica</button>
+        </div>
+        <div class="fb" id="fb"></div>
+      </div>
+      <div class="phase-done" id="phaseDone">
+        <div style="font-size:52px;" id="doneIcon">&#128737;</div>
+        <div style="font-size:18px;font-weight:500;" id="doneTitle">Fase concluída!</div>
+        <div style="font-size:13px;color:#9ca3af;max-width:340px;line-height:1.7;" id="doneSub"></div>
+        <div class="pstats" id="doneStats"></div>
+        <button class="btn-next" id="btnNext" onclick="nextPhase()">[ PRÓXIMA FASE ] →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MISSÃO CONCLUÍDA ══ -->
+<div id="victory-screen" class="screen">
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div class="dots">
+        <div class="dot" style="background:#ff5f57"></div>
+        <div class="dot" style="background:#ffbd2e"></div>
+        <div class="dot" style="background:#28c840"></div>
+      </div>
+      <span style="font-size:11px;color:#a78bfa;letter-spacing:1px;">MISSÃO CUMPRIDA</span>
+    </div>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:560px;gap:1.2rem;padding:2rem;text-align:center;">
+    <div style="font-size:56px;">&#127881;</div>
+    <div style="color:#a78bfa;font-size:20px;font-weight:500;">MISSÃO CUMPRIDA!</div>
+    <div style="color:#9ca3af;font-size:13px;max-width:380px;line-height:1.8;" id="victoryMsg"></div>
+    <div class="pstats" id="victoryStats"></div>
+    <div style="background:#0d1220;border:1px solid #00ff8844;border-radius:8px;padding:12px 20px;font-size:12px;color:#00ff88;" id="savedMsg" style="display:none;">
+      &#10003; Resultado salvo com sucesso!
+    </div>
+  </div>
+</div>
+
+<!-- ══ ADMIN ══ -->
+<div id="admin-screen" class="screen">
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div class="dots">
+        <div class="dot" style="background:#ff5f57"></div>
+        <div class="dot" style="background:#ffbd2e"></div>
+        <div class="dot" style="background:#28c840"></div>
+      </div>
+      <span style="font-size:11px;color:#6b7280;letter-spacing:1px;">PAINEL DO ADMINISTRADOR</span>
+    </div>
+    <button onclick="showScreen('intro')" style="background:transparent;border:1px solid #1f2937;color:#374151;border-radius:6px;padding:4px 12px;font-size:11px;cursor:pointer;font-family:monospace;">&#8592; Voltar</button>
+  </div>
+
+  <div id="admin-login">
+    <div style="font-size:11px;color:#6366f1;letter-spacing:3px;">ÁREA RESTRITA</div>
+    <div class="acard">
+      <div style="font-size:13px;color:#6b7280;letter-spacing:2px;text-align:center;">[ LOGIN DO ADMINISTRADOR ]</div>
+      <div class="afield"><label>USUÁRIO</label><input type="text" id="loginUser" placeholder="admin" autocomplete="off"/></div>
+      <div class="afield"><label>SENHA</label><input type="password" id="loginPass" placeholder="••••••••"/></div>
+      <button id="btnLogin" onclick="doLogin()">[ ENTRAR ]</button>
+      <div id="loginErr">Usuário ou senha incorretos.</div>
+    </div>
+  </div>
+
+  <div id="admin-dash">
+    <div class="dash-top">
+      <div>
+        <div style="font-size:11px;color:#6b7280;letter-spacing:1px;">BEM-VINDO,</div>
+        <div style="font-size:15px;color:#6366f1;font-weight:500;">Administrador</div>
+      </div>
+      <button id="refreshBtn" onclick="loadResults()">&#8635; Atualizar</button>
+    </div>
+    <div class="dash-body">
+      <div>
+        <div class="sec-title">RESUMO GERAL</div>
+        <div class="sum-cards">
+          <div class="sum-card"><div class="sum-label">ALUNOS</div><div class="sum-val" style="color:#6366f1;" id="totalAlunos">—</div></div>
+          <div class="sum-card"><div class="sum-label">MÉDIA GERAL</div><div class="sum-val" style="color:#00ff88;" id="mediaGeral">—</div></div>
+          <div class="sum-card"><div class="sum-label">MELHOR NOTA</div><div class="sum-val" style="color:#ffcc00;" id="melhorNota">—</div></div>
+          <div class="sum-card"><div class="sum-label">CONCLUÍRAM</div><div class="sum-val" style="color:#ff6b35;" id="concluiram">—</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="sec-title">RESULTADOS POR ALUNO</div>
+        <div class="atbl">
+          <div class="atbl-head">
+            <div>ALUNO</div><div style="text-align:right;">TOTAL</div><div style="text-align:right;">ERROS</div><div style="text-align:right;">%</div><div style="text-align:right;">HORÁRIO</div>
+          </div>
+          <div id="resultsTable"><div class="no-data">Carregando resultados...</div></div>
+        </div>
+      </div>
+      <div class="obs-area">
+        <div class="sec-title">ANOTAÇÕES DO PROFESSOR</div>
+        <textarea style="width:100%;background:#060b14;border:1px solid #1f2937;border-radius:6px;color:#9ca3af;font-family:monospace;font-size:12px;padding:10px;outline:none;resize:vertical;min-height:80px;" placeholder="Adicione observações sobre a turma..."></textarea>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- #app -->
+
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCr189G1ngl6BTb6j6xC3W7pP-X_QxW5C4",
+  authDomain: "mission-python.firebaseapp.com",
+  databaseURL: "https://mission-python-default-rtdb.firebaseio.com",
+  projectId: "mission-python",
+  storageBucket: "mission-python.firebasestorage.app",
+  messagingSenderId: "946813005922",
+  appId: "1:946813005922:web:60dfc43876930152e5a13b"
+};
+
+const fbApp = initializeApp(firebaseConfig);
+const db = getDatabase(fbApp);
+
+window.saveResult = function(data) {
+  push(ref(db, 'resultados'), data)
+    .then(() => { document.getElementById('savedMsg').style.display='block'; })
+    .catch(e => console.error(e));
+};
+
+window.loadResults = function() {
+  const tbl = document.getElementById('resultsTable');
+  tbl.innerHTML = '<div class="no-data">Carregando...</div>';
+  onValue(ref(db, 'resultados'), (snap) => {
+    const data = snap.val();
+    if (!data) { tbl.innerHTML = '<div class="no-data">Nenhum resultado ainda.</div>'; return; }
+    const rows = Object.values(data).sort((a,b) => b.total - a.total);
+    const total = rows.length;
+    const media = Math.round(rows.reduce((s,r)=>s+r.total,0)/total);
+    const melhor = Math.max(...rows.map(r=>r.total));
+    const concluiram = rows.filter(r=>r.completo).length;
+    document.getElementById('totalAlunos').textContent = total;
+    document.getElementById('mediaGeral').textContent = media + ' pts';
+    document.getElementById('melhorNota').textContent = melhor + ' pts';
+    document.getElementById('concluiram').textContent = concluiram + '/' + total;
+    tbl.innerHTML = rows.map(r => {
+      const perc = Math.round(r.total/480*100);
+      const tag = r.erros === 0 ? '<span class="tag-ok">0 erros</span>' : '<span class="tag-warn">'+r.erros+' erros</span>';
+      const hora = r.horario || '—';
+      return '<div class="atbl-row"><div style="color:#d1d5db;">'+r.nome+'</div><div style="text-align:right;color:#a78bfa;font-weight:500;">'+r.total+' pts</div><div style="text-align:right;">'+tag+'</div><div style="text-align:right;color:'+(perc>=90?'#00ff88':perc>=70?'#ffcc00':'#ff6b35')+'">'+perc+'%</div><div style="text-align:right;color:#6b7280;font-size:11px;">'+hora+'</div></div>';
+    }).join('');
+  }, { onlyOnce: true });
+};
+</script>
+
+<script>
+// ══ SONS ══
+var actx=null, mnodes=[], mgain=null, sndOn=true;
+function getACtx(){if(!actx)actx=new(window.AudioContext||window.webkitAudioContext)();return actx;}
+function keyClick(){if(!sndOn)return;try{var c=getACtx(),b=c.createBuffer(1,c.sampleRate*.04,c.sampleRate),d=b.getChannelData(0);for(var i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,4)*.35;var s=c.createBufferSource();s.buffer=b;var f=c.createBiquadFilter();f.type='bandpass';f.frequency.value=2200+Math.random()*600;f.Q.value=1.5;s.connect(f);f.connect(c.destination);s.start();}catch(e){}}
+function startMusic(){if(!sndOn)return;try{var c=getACtx();mgain=c.createGain();mgain.gain.value=0;mgain.connect(c.destination);var notes=[55,58,62,65,69,65,62,58],step=0;[[55,'sine',.06],[82.5,'triangle',.03]].forEach(function(x){var o=c.createOscillator(),g=c.createGain();o.type=x[1];o.frequency.value=x[0];g.gain.value=x[2];o.connect(g);g.connect(mgain);o.start();mnodes.push(o);});function note(){if(!sndOn)return;var f=notes[step%notes.length]*(step%16<8?1:1.5);step++;var o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(0,c.currentTime);g.gain.linearRampToValueAtTime(.04,c.currentTime+.1);g.gain.linearRampToValueAtTime(0,c.currentTime+1.2);o.connect(g);g.connect(mgain);o.start(c.currentTime);o.stop(c.currentTime+1.4);mnodes.push(o);setTimeout(note,900+Math.random()*300);}function tens(){if(!sndOn)return;var o=c.createOscillator(),g=c.createGain();o.type='sawtooth';o.frequency.value=110+Math.random()*20;g.gain.setValueAtTime(0,c.currentTime);g.gain.linearRampToValueAtTime(.015,c.currentTime+2);g.gain.linearRampToValueAtTime(0,c.currentTime+5);o.connect(g);g.connect(mgain);o.start(c.currentTime);o.stop(c.currentTime+5.5);mnodes.push(o);setTimeout(tens,4000+Math.random()*3000);}note();setTimeout(tens,2000);mgain.gain.linearRampToValueAtTime(1,c.currentTime+2);}catch(e){}}
+function stopMusic(){try{if(mgain)mgain.gain.linearRampToValueAtTime(0,actx.currentTime+1);setTimeout(function(){mnodes.forEach(function(n){try{n.stop();}catch(e){}});mnodes=[];},1100);}catch(e){}}
+
+// ══ ESTADO GLOBAL ══
+var playerName='';
+var phaseScores=[0,0,0,0];
+var phaseErrors=[0,0,0,0];
+var currentPhase=0;
+var currentChallenge=0;
+var phaseScore=0;
+var phaseErr=0;
+var hintUsed=false;
+var timerInterval=null;
+var totalSecs=3480;
+
+// ══ FASES ══
+var phases=[
+  {
+    name:'FASE 1 — ACESSO AO SISTEMA',
+    color:'#00ff88', dotColor:'#00ff88',
+    label:'GOV-CORE :: TERMINAL DE ACESSO',
+    ctxColor:'#00ff8822', ctxBorder:'#00ff8833', ctxLabelColor:'#00ff88',
+    doneIcon:'&#128737;',
+    doneTitle:'Acesso concedido!',
+    doneSub:'Você entrou no sistema. A transferência bancária ainda está ativa — bloqueie-a!',
+    btnLabel:'[ IR PARA FASE 2 ] →',
+    challenges:[
+      {ctx:'O sistema pede autenticação. Crie uma variável chamada <b>senha_acesso</b> e atribua a ela o valor numérico <b>2048</b>.',diff:'Básico',
+       code:['<span class="cm"># Autenticação — defina a variável correta</span>','INPUT = <span class="num">2048</span>','<span class="kw">if</span> senha_acesso == <span class="num">2048</span>:','&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(<span class="str">"Acesso liberado"</span>)'],
+       ph:'nome da variável',answers:['senha_acesso'],hint:'Em Python você cria uma variável escrevendo o nome dela seguido de = e o valor. O nome pedido está em negrito no contexto.'},
+      {ctx:'Encontrou um verificador de ameaça incompleto. Falta a palavra-chave da condição alternativa quando a primeira é falsa.',diff:'Básico',
+       code:['<span class="cm"># Verificador de ameaça</span>','nivel = <span class="num">9</span>','<span class="kw">if</span> nivel >= <span class="num">10</span>:','&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(<span class="str">"Crítico"</span>)','INPUT nivel >= <span class="num">5</span>:','&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(<span class="str">"Alto"</span>)','<span class="kw">else</span>:','&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(<span class="str">"Normal"</span>)'],
+       ph:'palavra-chave',answers:['elif'],hint:'Usamos if para a primeira condição, else para o caso final, e uma terceira palavra para condições do meio — junção de "else"+"if".'},
+      {ctx:'Localizou o módulo de transferência. Complete a função que verifica o saldo. Falta a palavra-chave que devolve um valor.',diff:'Intermediário',
+       code:['<span class="cm"># Bloqueio da transferência</span>','<span class="kw">def</span> <span class="fn">verificar</span>(saldo, valor):','&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> saldo >= valor:','&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;INPUT <span class="str">"BLOQUEADO"</span>','&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">else</span>:','&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> <span class="str">"LIBERADO"</span>'],
+       ph:'palavra-chave',answers:['return'],hint:'Funções em Python usam uma palavra-chave para enviar um valor de volta. Em inglês significa "retornar".'},
+    ]
+  },
+  {
+    name:'FASE 2 — PROTEÇÃO DE DADOS',
+    color:'#ffcc00', dotColor:'#ffcc00',
+    label:'GOV-CORE :: MÓDULO DE DADOS',
+    ctxColor:'#ffcc0011', ctxBorder:'#ffcc0033', ctxLabelColor:'#ffcc00',
+    doneIcon:'&#128190;',
+    doneTitle:'Dados protegidos!',
+    doneSub:'Módulo de destruição neutralizado. Mas a bomba ainda está ativa — vá para a Fase 3!',
+    btnLabel:'[ IR PARA FASE 3 ] →',
+    challenges:[
+      {ctx:'O cracker marcou arquivos para deletar. Use o método correto para <b>adicionar</b> o arquivo <b>"backup_seguro.db"</b> à lista de proteção.',diff:'Básico',
+       code:['<span class="cm"># Lista de arquivos a proteger</span>','protegidos = [<span class="str">"gov_financas.db"</span>, <span class="str">"cidadaos.db"</span>]','<span class="cm"># Adicione "backup_seguro.db"</span>','protegidos.INPUT(<span class="str">"backup_seguro.db"</span>)','<span class="fn">print</span>(protegidos)'],
+       ph:'método',answers:['append'],hint:'Listas têm um método para adicionar um item ao final. Começa com "a" e em inglês significa "anexar".'},
+      {ctx:'Use um <b>loop</b> para percorrer cada servidor da lista e exibir uma mensagem de proteção.',diff:'Intermediário',
+       code:['<span class="cm"># Servidores em risco</span>','servidores = [<span class="str">"SRV-01"</span>, <span class="str">"SRV-02"</span>, <span class="str">"SRV-03"</span>]','INPUT servidor <span class="kw">in</span> servidores:','&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(<span class="str">"Protegendo: "</span> + servidor)'],
+       ph:'palavra-chave',answers:['for'],hint:'Para percorrer cada item de uma lista usamos um tipo de loop. A palavra tem 3 letras e em inglês significa "para".'},
+      {ctx:'O cracker escondeu código numa string. Use o método correto para converter para <b>letras maiúsculas</b> e identificar o código oculto.',diff:'Intermediário',
+       code:['<span class="cm"># Decodificando mensagem oculta</span>','mensagem = <span class="str">"payload_ativo_x7f"</span>','<span class="cm"># Converta para maiúsculas</span>','decodificada = mensagem.INPUT()','<span class="fn">print</span>(decodificada)'],
+       ph:'método',answers:['upper'],hint:'Strings têm um método para converter tudo para maiúsculas. Em inglês "upper case" — use só a primeira palavra.'},
+    ]
+  },
+  {
+    name:'FASE 3 — DESATIVAR A BOMBA',
+    color:'#ff6b35', dotColor:'#ff6b35',
+    label:'GOV-CORE :: DETONADOR',
+    ctxColor:'#ff6b3511', ctxBorder:'#ff6b3533', ctxLabelColor:'#ff6b35',
+    doneIcon:'&#128163;',
+    doneTitle:'Bomba desativada!',
+    doneSub:'Detonador neutralizado. Resta apenas apagar o payload. Fase final, agente!',
+    btnLabel:'[ FASE FINAL ] →',
+    challenges:[
+      {ctx:'O detonador usa um dicionário. Acesse o valor da chave <b>"codigo"</b> para obter a sequência de desativação.',diff:'Intermediário',
+       code:['<span class="cm"># Dicionário do detonador</span>','detonador = {<span class="str">"codigo"</span>: <span class="num">7749</span>, <span class="str">"ativo"</span>: <span class="kw">True</span>}','<span class="cm"># Acesse o valor da chave "codigo"</span>','sequencia = detonador[INPUT]','<span class="fn">print</span>(<span class="str">"Código:"</span>, sequencia)'],
+       ph:'chave aqui',answers:['"codigo"',"'codigo'"],hint:'Para acessar um valor num dicionário use colchetes com a chave entre aspas. A chave é "codigo" — inclua as aspas.'},
+      {ctx:'A função de desativação precisa de dois parâmetros: <b>codigo</b> e <b>tentativas</b>. Complete o cabeçalho da função.',diff:'Intermediário',
+       code:['<span class="cm"># Função de desativação</span>','<span class="kw">def</span> <span class="fn">desativar</span>INPUT:','&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> codigo == <span class="num">7749</span> <span class="kw">and</span> tentativas > <span class="num">0</span>:','&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> <span class="str">"BOMBA DESATIVADA"</span>','&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> <span class="str">"FALHA"</span>'],
+       ph:'(parâmetros)',answers:['(codigo, tentativas)','(codigo,tentativas)'],hint:'Parâmetros ficam entre parênteses após o nome, separados por vírgula. Os dois são: codigo e tentativas.'},
+      {ctx:'O módulo pode gerar um <b>ValueError</b>. O bloco try já está pronto — complete a linha que captura esse erro específico.',diff:'Avançado',
+       code:['<span class="cm"># Capturando erros</span>','<span class="kw">try</span>:','&nbsp;&nbsp;&nbsp;&nbsp;resultado = desativar(<span class="num">7749</span>, <span class="num">3</span>)','&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(resultado)','<span class="kw">except</span> INPUT <span class="kw">as</span> e:','&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">print</span>(<span class="str">"Erro:"</span>, e)'],
+       ph:'tipo do erro',answers:['valueerror','ValueError'],hint:'O except pode capturar tipos específicos de erro. O erro mencionado no contexto é exatamente o que deve ser digitado.'},
+    ]
+  },
+  {
+    name:'FASE FINAL — APAGAR O PAYLOAD',
+    color:'#a78bfa', dotColor:'#a78bfa',
+    label:'GOV-CORE :: PAYLOAD',
+    ctxColor:'#a78bfa11', ctxBorder:'#a78bfa33', ctxLabelColor:'#a78bfa',
+    doneIcon:'&#127881;',
+    doneTitle:'MISSÃO CUMPRIDA!',
+    doneSub:'Payload apagado. Transferência bloqueada. Sistema restaurado. Bomba desativada.',
+    btnLabel:'[ VER RESULTADO FINAL ] →',
+    challenges:[
+      {ctx:'O payload está camuflado numa lista. Use <b>list comprehension</b> para filtrar apenas os processos que contêm a palavra <b>"payload"</b>.',diff:'Avançado',
+       code:['<span class="cm"># Lista de processos</span>','processos = [<span class="str">"svc_rede"</span>, <span class="str">"payload_x7"</span>, <span class="str">"svc_log"</span>, <span class="str">"payload_root"</span>]','<span class="cm"># Filtre os que contêm "payload"</span>','maliciosos = [p INPUT]','<span class="fn">print</span>(maliciosos)'],
+       ph:'condição da lista',answers:['for p in processos if "payload" in p',"for p in processos if 'payload' in p"],hint:'List comprehension: [expressão for item in lista if condição]. A expressão é p, a lista é processos, e a condição verifica se "payload" está em p.'},
+      {ctx:'Para apagar o payload com segurança, defina uma <b>classe</b> chamada <b>Payload</b>. Complete a linha que inicia a definição da classe.',diff:'Avançado',
+       code:['<span class="cm"># Definindo a classe do payload</span>','INPUT Payload:','&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, nome, ativo):','&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">self</span>.nome = nome','&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">self</span>.ativo = ativo','&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">def</span> <span class="fn">apagar</span>(<span class="kw">self</span>):','&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">self</span>.ativo = <span class="kw">False</span>'],
+       ph:'palavra-chave',answers:['class'],hint:'Classes em Python são definidas com uma palavra-chave antes do nome. Em inglês "classe" se escreve com 5 letras.'},
+      {ctx:'O payload tem uma versão aprimorada <b>PayloadCritico</b> que <b>herda</b> de <b>Payload</b>. Complete a definição da subclasse.',diff:'Avançado',
+       code:['<span class="cm"># Subclasse que herda de Payload</span>','<span class="kw">class</span> <span class="fn">PayloadCritico</span>INPUT:','&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, nome):','&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">super</span>().__init__(nome, <span class="kw">True</span>)','&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">self</span>.nivel = <span class="str">"CRÍTICO"</span>'],
+       ph:'herança',answers:['(Payload)','(payload)'],hint:'Para herdar de outra classe, coloque o nome da classe pai entre parênteses após o nome da subclasse. A classe pai é Payload.'},
+    ]
+  }
+];
+
+// ══ NAVEGAÇÃO ══
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById(id).classList.add('active');
+}
+window.goAdmin=function(){showScreen('admin-screen');}
+
+// ══ INTRO ══
+var introLines=[
+  {t:'[22:47:03] ',c:''},{t:'ALERTA CRÍTICO',c:'red'},{t:' — Acesso não autorizado detectado no GOV-CORE\n',c:''},
+  {t:'[22:47:04] Protocolo de segurança: ',c:''},{t:'FALHOU\n',c:'red'},
+  {t:'[22:47:05] Intruso identificado: ',c:''},{t:'SH4D0W_X :: Origem desconhecida\n',c:'red'},
+  {t:'[22:47:08] ',c:''},{t:'>> SH4D0W_X: ',c:'cyan'},{t:'Olá, governo. Payload instalado.\n',c:'white'},
+  {t:'[22:47:09] ',c:''},{t:'>> SH4D0W_X: ',c:'cyan'},{t:'Em 60 minutos: R$1.000.000 → Conta Offshore (BTC)\n',c:'red'},
+  {t:'[22:47:10] ',c:''},{t:'>> SH4D0W_X: ',c:'cyan'},{t:'Sistema apagado. Dados destruídos. Bomba ativa.\n',c:'red'},
+  {t:'[22:47:11] ',c:''},{t:'>> SH4D0W_X: ',c:'cyan'},{t:'Ninguém pode me parar. ;)\n\n',c:'white'},
+  {t:'[22:47:15] Equipe de TI confirmando ataque... ',c:''},{t:'REAL. ATIVO. CRÍTICO.\n',c:'yellow'},
+  {t:'[22:47:20] Buscando protocolo de resposta...\n',c:''},
+  {t:'[22:47:22] >> Convocando especialista de nível máximo...\n\n',c:'yellow'},
+];
+var dialogueData=[
+  {sender:'Ministro Alves',icon:'👨‍💼',color:'#1e40af',msg:'Situação confirmada. O sistema do governo está comprometido. Precisamos de você, <span class="hl">agora</span>.'},
+  {sender:'Analista Carla (TI Gov)',icon:'👩‍💻',color:'#065f46',msg:'Confirmamos o payload. Ele tem <span class="hl">três módulos</span>: transferência bancária, destruição de dados e detonador. Temos menos de 1 hora.'},
+  {sender:'SH4D0W_X (Cracker)',icon:'💀',color:'#7f1d1d',msg:'Acharam alguém? Meu código é <span class="hl">inquebrável</span>. Aguardo a transferência. Boa sorte.'},
+  {sender:'Ministro Alves',icon:'👨‍💼',color:'#1e40af',msg:'Você é o melhor que temos. Somente um programador de elite pode reverter isso. <span class="ok">Aceita a missão?</span>'},
+];
+
+function sleep(ms){return new Promise(function(r){setTimeout(r,ms);});}
+
+function countdown(ringId,numId,secs){
+  return new Promise(function(resolve){
+    var ring=document.getElementById(ringId),num=document.getElementById(numId);
+    var circ=69.1,rem=secs;
+    num.textContent=rem; ring.style.strokeDashoffset='0';
+    var iv=setInterval(function(){rem--;num.textContent=rem;ring.style.strokeDashoffset=String(circ*(1-rem/secs));if(rem<=0){clearInterval(iv);resolve();}},1000);
+  });
+}
+
+async function typeWriter(parts,el,delay){
+  for(var i=0;i<parts.length;i++){
+    var part=parts[i];
+    for(var j=0;j<part.t.length;j++){
+      var ch=part.t[j];
+      var span=document.createElement('span');
+      if(part.c)span.className=part.c;
+      span.textContent=ch;
+      el.appendChild(span);
+      if(ch!==' '&&ch!=='\n')keyClick();
+      await sleep(ch==='\n'?delay*3:delay);
+    }
+  }
+}
+
+async function runIntro(){
+  await sleep(300);
+  startMusic();
+  var el=document.getElementById('typeArea');
+  await typeWriter(introLines,el,22);
+  var h1=document.getElementById('hint1');
+  h1.style.display='flex';
+  await countdown('ring1','rnum1',15);
+  h1.style.display='none';
+  showScreen('dialogues');
+  var cont=document.getElementById('dialogues-area');
+  for(var i=0;i<dialogueData.length;i++){
+    await sleep(600);
+    var d=dialogueData[i];
+    var box=document.createElement('div');
+    box.className='msg-box';
+    box.innerHTML='<div class="avatar" style="background:'+d.color+'22;border-color:'+d.color+'44;">'+d.icon+'</div><div class="msg-content"><div class="msg-sender">'+d.sender+'</div><div class="msg-text">'+d.msg+'</div></div>';
+    cont.appendChild(box);
+    await sleep(1800);
+  }
+  var h2=document.getElementById('hint2');
+  h2.style.display='flex';
+  await countdown('ring2','rnum2',15);
+  h2.style.display='none';
+  showScreen('accept');
+}
+
+document.getElementById('nameInput').addEventListener('input',function(){
+  document.getElementById('btnAccept').disabled=this.value.trim().length<2;
+});
+
+window.startGame=function(){
+  playerName=document.getElementById('nameInput').value.trim();
+  stopMusic();
+  currentPhase=0;
+  phaseScores=[0,0,0,0];
+  phaseErrors=[0,0,0,0];
+  loadPhase(0);
+};
+
+// ══ FASES ══
+function loadPhase(pi){
+  currentPhase=pi;
+  currentChallenge=0;
+  phaseScore=0;
+  phaseErr=0;
+  hintUsed=false;
+  var ph=phases[pi];
+
+  document.getElementById('phaseBarTitle').textContent=ph.label+' — '+playerName.toUpperCase();
+  document.getElementById('phaseDot').style.color=ph.dotColor;
+  document.getElementById('timerVal').style.color=ph.color;
+  document.getElementById('scoreDisplay').style.color=ph.color;
+  document.getElementById('scoreDisplay').textContent='0';
+  document.getElementById('errDisplay').textContent='0';
+
+  // sidebar challenges
+  var sc=document.getElementById('sidebar-challenges');
+  sc.innerHTML='<div class="stitle">'+ph.name.split('—')[0].trim()+'</div>';
+  ph.challenges.forEach(function(c,i){
+    var d=document.createElement('div');
+    d.className='ci'+(i===0?' active':'');
+    d.id='ci'+(i+1);
+    d.innerHTML='<div class="ci-num" style="'+(i===0?'border-color:'+ph.color+';color:'+ph.color:'')+';">'+(i+1)+'</div><span>'+['Básico','Médio','Avançado'][i]+'</span>';
+    sc.appendChild(d);
+  });
+
+  // sidebar history
+  var sh=document.getElementById('sidebar-history');
+  sh.innerHTML='';
+  if(pi>0){
+    sh.innerHTML='<div class="stitle">HISTÓRICO</div>';
+    var colors=['#00ff88','#ffcc00','#ff6b35'];
+    for(var i=0;i<pi;i++){
+      var d2=document.createElement('div');
+      d2.style.cssText='font-size:12px;color:'+colors[i]+';margin-bottom:2px;';
+      d2.textContent='F'+(i+1)+': '+phaseScores[i]+' pts';
+      sh.appendChild(d2);
+    }
+  }
+
+  // timer
+  if(timerInterval)clearInterval(timerInterval);
+  totalSecs=3480-(pi*180);
+  timerInterval=setInterval(function(){
+    totalSecs--;
+    if(totalSecs<=0){clearInterval(timerInterval);totalSecs=0;}
+    var m=Math.floor(totalSecs/60),s=totalSecs%60;
+    document.getElementById('timerVal').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  },1000);
+
+  document.getElementById('quizArea').style.display='block';
+  document.getElementById('phaseDone').className='phase-done';
+  showScreen('phase-screen');
+  renderChallenge();
+}
+
+function renderChallenge(){
+  var ph=phases[currentPhase];
+  var ch=ph.challenges[currentChallenge];
+  document.getElementById('ctxBox').style.cssText='background:'+ph.ctxColor+';border:1px solid '+ph.ctxBorder+';border-radius:8px;padding:12px 14px;';
+  document.getElementById('ctxLabel').style.color=ph.ctxLabelColor;
+  document.getElementById('ctxLabel').textContent='SITUAÇÃO — '+ph.name;
+  document.getElementById('ctxTxt').innerHTML=ch.ctx;
+  document.getElementById('chalNum').textContent=currentChallenge+1;
+  document.getElementById('diffLabel').textContent=ch.diff;
+  document.getElementById('diffLabel').style.color=ph.color;
+  document.getElementById('hintBox').className='hint-box';
+  document.getElementById('fb').className='fb';
+  document.getElementById('fb').style.display='none';
+  hintUsed=false;
+
+  var btnC=document.getElementById('btnCheck');
+  btnC.style.background=ph.color;
+  btnC.style.color=ph.color==='#ffcc00'||ph.color==='#00ff88'?'#060b14':'#fff';
+
+  var block=document.getElementById('codeBlock');
+  block.innerHTML='';
+  ch.code.forEach(function(line){
+    var d=document.createElement('div');
+    if(line.indexOf('INPUT')>=0){
+      var parts=line.split('INPUT');
+      var s1=document.createElement('span');s1.innerHTML=parts[0];
+      var inp=document.createElement('input');
+      inp.type='text';inp.className='blank';inp.id='userInput';
+      inp.style.color=ph.color;inp.style.borderColor=ph.color;
+      inp.placeholder=ch.ph;
+      inp.setAttribute('autocomplete','off');inp.setAttribute('spellcheck','false');
+      inp.addEventListener('keydown',function(e){if(e.key==='Enter')checkAnswer();});
+      var s2=document.createElement('span');s2.innerHTML=parts[1]||'';
+      d.appendChild(s1);d.appendChild(inp);d.appendChild(s2);
+    }else{
+      d.innerHTML=line||'&nbsp;';
+    }
+    block.appendChild(d);
+  });
+
+  // sidebar indicators
+  phases[currentPhase].challenges.forEach(function(_,i){
+    var el=document.getElementById('ci'+(i+1));
+    if(!el)return;
+    el.className='ci'+(i<currentChallenge?' done':i===currentChallenge?' active':'');
+    var num=el.querySelector('.ci-num');
+    if(num)num.style.cssText=i===currentChallenge?'border-color:'+ph.color+';color:'+ph.color:'';
+  });
+
+  setTimeout(function(){var i=document.getElementById('userInput');if(i)i.focus();},150);
+}
+
+window.checkAnswer=function(){
+  var inp=document.getElementById('userInput');
+  if(!inp)return;
+  var val=inp.value.trim();
+  var ph=phases[currentPhase];
+  var ch=ph.challenges[currentChallenge];
+  var correct=ch.answers.map(function(a){return a.toLowerCase();});
+  var ok=correct.indexOf(val.toLowerCase())>=0;
+  var fb=document.getElementById('fb');
+  if(ok){
+    inp.style.borderColor='#00ff88';inp.style.color='#00ff88';inp.style.background='#0a1a10';
+    var pts=hintUsed?20:40;
+    phaseScore+=pts;
+    document.getElementById('scoreDisplay').textContent=phaseScore;
+    fb.className='fb ok';
+    fb.textContent='✓ Correto! +'+pts+' pontos.'+(currentChallenge<2?' Próximo...':' Fase concluída!');
+    fb.style.display='block';
+    setTimeout(function(){
+      currentChallenge++;
+      if(currentChallenge<ph.challenges.length)renderChallenge();
+      else finishPhase();
+    },1500);
+  }else{
+    inp.style.borderColor='#ff4444';inp.style.background='#1a0f0f';
+    phaseErr++;
+    document.getElementById('errDisplay').textContent=phaseErr;
+    fb.className='fb err';
+    fb.textContent='✗ Resposta incorreta. Tente novamente.';
+    fb.style.display='block';
+    setTimeout(function(){if(inp){inp.style.borderColor=ph.color;inp.style.background='#1f2937';inp.style.color=ph.color;}},900);
+  }
+};
+
+window.showHint=function(){
+  hintUsed=true;
+  var hb=document.getElementById('hintBox');
+  hb.textContent='>> Dica: '+phases[currentPhase].challenges[currentChallenge].hint;
+  hb.className='hint-box show';
+};
+
+function finishPhase(){
+  clearInterval(timerInterval);
+  phaseScores[currentPhase]=phaseScore;
+  phaseErrors[currentPhase]=phaseErr;
+  var ph=phases[currentPhase];
+  document.getElementById('quizArea').style.display='none';
+  var pd=document.getElementById('phaseDone');
+  pd.className='phase-done show';
+  document.getElementById('doneIcon').innerHTML=ph.doneIcon;
+  document.getElementById('doneTitle').textContent=ph.doneTitle;
+  document.getElementById('doneTitle').style.color=ph.color;
+  document.getElementById('doneSub').textContent=ph.doneSub;
+  var total=phaseScores.reduce(function(a,b){return a+b;},0);
+  var stats=document.getElementById('doneStats');
+  stats.innerHTML='<div class="prow">Pontos desta fase <span style="color:'+ph.color+'">'+phaseScore+' pts</span></div><div class="prow">Erros <span>'+phaseErr+'</span></div><div class="prow">Total acumulado <span>'+total+' pts</span></div>';
+  var btn=document.getElementById('btnNext');
+  btn.textContent=ph.btnLabel;
+  btn.style.background=ph.color;
+  btn.style.color=ph.color==='#ffcc00'||ph.color==='#00ff88'?'#060b14':'#fff';
+}
+
+window.nextPhase=function(){
+  if(currentPhase<3)loadPhase(currentPhase+1);
+  else showVictory();
+};
+
+function showVictory(){
+  var total=phaseScores.reduce(function(a,b){return a+b;},0);
+  var totalErrs=phaseErrors.reduce(function(a,b){return a+b;},0);
+  var perc=Math.round(total/480*100);
+  document.getElementById('victoryMsg').innerHTML='Payload apagado. Transferência bloqueada. Sistema restaurado. Bomba desativada.<br>Você salvou o governo, agente <b style="color:#a78bfa;">'+playerName+'</b>!';
+  var vs=document.getElementById('victoryStats');
+  var colors=['#00ff88','#ffcc00','#ff6b35','#a78bfa'];
+  var labels=['Fase 1 — Fundamentos','Fase 2 — Estruturas','Fase 3 — Avançado','Fase Final — POO'];
+  vs.innerHTML='<div class="pstats">'+labels.map(function(l,i){return '<div class="prow">'+l+' <span style="color:'+colors[i]+'">'+phaseScores[i]+' pts</span></div>';}).join('')+'<div class="prow" style="color:#a78bfa;font-weight:500;">TOTAL <span style="color:#a78bfa;font-size:15px;">'+total+' pts ('+perc+'%)</span></div><div class="prow">Erros totais <span>'+totalErrs+'</span></div></div>';
+  showScreen('victory-screen');
+  var now=new Date();
+  var horario=now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  if(window.saveResult){
+    window.saveResult({nome:playerName,total:total,erros:totalErrs,fase1:phaseScores[0],fase2:phaseScores[1],fase3:phaseScores[2],faseFinal:phaseScores[3],completo:true,horario:horario});
+  }
+}
+
+// ══ ADMIN ══
+document.getElementById('loginUser').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin();});
+document.getElementById('loginPass').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin();});
+window.doLogin=function(){
+  var u=document.getElementById('loginUser').value.trim().toLowerCase();
+  var p=document.getElementById('loginPass').value.trim();
+  var err=document.getElementById('loginErr');
+  if((u==='admin'||u==='professor')&&p==='admin123'){
+    document.getElementById('admin-login').style.display='none';
+    var dash=document.getElementById('admin-dash');
+    dash.style.display='flex';dash.style.flexDirection='column';
+    loadResults();
+  }else{
+    err.style.display='block';
+    setTimeout(function(){err.style.display='none';},2500);
+  }
+};
+
+// ══ START ══
+runIntro();
+</script>
+</body>
+</html>
