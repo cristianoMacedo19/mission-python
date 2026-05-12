@@ -963,6 +963,9 @@ function renderChallenge(){
         if(e.key==='Enter'){checkAnswer();}
         else if(e.key.length===1||e.key==='Backspace'){somTecla();}
       });
+      inp.addEventListener('paste',function(e){e.preventDefault();});
+      inp.addEventListener('cut',function(e){e.preventDefault();});
+      inp.addEventListener('drop',function(e){e.preventDefault();});
       var s2=document.createElement('span');
       s2.style.color='#d1d5db';
       s2.innerHTML=parts[1]||'';
