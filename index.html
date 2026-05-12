@@ -123,6 +123,12 @@ input.blank:focus{opacity:.9;}
 #refreshBtn:hover{border-color:#6b7280;color:#9ca3af;}
 .pulse{animation:pu 1.2s ease-in-out infinite;}
 @keyframes pu{0%,100%{opacity:1}50%{opacity:0.2}}
+.alt-list{display:flex;flex-direction:column;gap:7px;margin-top:4px;}
+.alt-btn{background:#0d1220;border:1px solid #1f2937;border-radius:6px;padding:9px 14px;font-size:12px;color:#9ca3af;font-family:monospace;cursor:pointer;text-align:left;transition:border-color .2s,color .2s;}
+.alt-btn:hover{border-color:#374151;color:#d1d5db;}
+.alt-btn.selected{border-color:currentColor;color:#d1d5db;background:#111827;}
+.alt-btn.certa{border-color:#00ff88!important;color:#00ff88!important;background:#0a1a10!important;}
+.alt-btn.errada{border-color:#ff4444!important;color:#ff4444!important;background:#1a0f0f!important;}
 
 /* ── SPLASH ── */
 #splash{position:fixed;inset:0;background:#060b14;z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.5rem;cursor:pointer;}
@@ -280,11 +286,12 @@ input.blank:focus{opacity:.9;}
           <div class="ctx-txt" id="ctxTxt"></div>
         </div>
         <div class="badge-row">
-          <div class="badge">Desafio <b id="chalNum">1</b> de 3</div>
+          <div class="badge">Desafio <b id="chalNum">1</b> de <b id="chalTotal">3</b></div>
           <div class="badge">Dificuldade: <b id="diffLabel">Básico</b></div>
         </div>
-        <div style="font-size:10px;color:#6b7280;letter-spacing:1px;">COMPLETE O CÓDIGO:</div>
+        <div style="font-size:10px;color:#6b7280;letter-spacing:1px;" id="codeLabel">COMPLETE O CÓDIGO:</div>
         <div class="code-block" id="codeBlock"></div>
+        <div class="alt-list" id="altList" style="display:none;"></div>
         <div class="hint-box" id="hintBox"></div>
         <div class="btns-row">
           <button class="btn-check" id="btnCheck" onclick="checkAnswer()">[ VERIFICAR ]</button>
@@ -446,11 +453,139 @@ function keyClick(){if(!sndOn)return;try{var c=getACtx(),b=c.createBuffer(1,c.sa
 function startMusic(){if(!sndOn)return;try{var c=getACtx();mgain=c.createGain();mgain.gain.value=0;mgain.connect(c.destination);var notes=[55,58,62,65,69,65,62,58],step=0;[[55,'sine',.06],[82.5,'triangle',.03]].forEach(function(x){var o=c.createOscillator(),g=c.createGain();o.type=x[1];o.frequency.value=x[0];g.gain.value=x[2];o.connect(g);g.connect(mgain);o.start();mnodes.push(o);});function note(){if(!sndOn)return;var f=notes[step%notes.length]*(step%16<8?1:1.5);step++;var o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(0,c.currentTime);g.gain.linearRampToValueAtTime(.04,c.currentTime+.1);g.gain.linearRampToValueAtTime(0,c.currentTime+1.2);o.connect(g);g.connect(mgain);o.start(c.currentTime);o.stop(c.currentTime+1.4);mnodes.push(o);setTimeout(note,900+Math.random()*300);}function tens(){if(!sndOn)return;var o=c.createOscillator(),g=c.createGain();o.type='sawtooth';o.frequency.value=110+Math.random()*20;g.gain.setValueAtTime(0,c.currentTime);g.gain.linearRampToValueAtTime(.015,c.currentTime+2);g.gain.linearRampToValueAtTime(0,c.currentTime+5);o.connect(g);g.connect(mgain);o.start(c.currentTime);o.stop(c.currentTime+5.5);mnodes.push(o);setTimeout(tens,4000+Math.random()*3000);}note();setTimeout(tens,2000);mgain.gain.linearRampToValueAtTime(1,c.currentTime+2);}catch(e){}}
 function stopMusic(){try{if(mgain)mgain.gain.linearRampToValueAtTime(0,actx.currentTime+1);setTimeout(function(){mnodes.forEach(function(n){try{n.stop();}catch(e){}});mnodes=[];},1100);}catch(e){}}
 
+function blupMsg(cor){
+  if(!sndOn)return;
+  try{
+    var c=getACtx();
+    var g=c.createGain();
+    g.connect(c.destination);
+    // Frequência base varia por personagem
+    var freqMap={'#1e40af':520,'#065f46':440,'#7f1d1d':280,'#7c3aed':600};
+    var freq=freqMap[cor]||480;
+    var o=c.createOscillator();
+    o.type='sine';
+    o.frequency.setValueAtTime(freq*0.8,c.currentTime);
+    o.frequency.linearRampToValueAtTime(freq,c.currentTime+0.04);
+    o.frequency.linearRampToValueAtTime(freq*1.15,c.currentTime+0.09);
+    o.frequency.linearRampToValueAtTime(freq*0.9,c.currentTime+0.16);
+    g.gain.setValueAtTime(0,c.currentTime);
+    g.gain.linearRampToValueAtTime(0.18,c.currentTime+0.03);
+    g.gain.linearRampToValueAtTime(0.12,c.currentTime+0.1);
+    g.gain.linearRampToValueAtTime(0,c.currentTime+0.22);
+    o.connect(g);
+    o.start(c.currentTime);
+    o.stop(c.currentTime+0.25);
+  }catch(e){}
+}
+
+function somVitoria(){
+  if(!sndOn)return;
+  try{
+    var c=getACtx();
+    var g=c.createGain();
+    g.connect(c.destination);
+    var notas=[523,659,784,1047,784,1047,1047,1319];
+    var tempos=[0,0.12,0.24,0.38,0.52,0.62,0.72,0.84];
+    notas.forEach(function(freq,i){
+      var o=c.createOscillator();
+      var og=c.createGain();
+      o.type= i===7?'sine':'triangle';
+      o.frequency.value=freq;
+      og.gain.setValueAtTime(0,c.currentTime+tempos[i]);
+      og.gain.linearRampToValueAtTime(0.22,c.currentTime+tempos[i]+0.04);
+      og.gain.linearRampToValueAtTime(0,c.currentTime+tempos[i]+0.18);
+      o.connect(og);og.connect(g);
+      o.start(c.currentTime+tempos[i]);
+      o.stop(c.currentTime+tempos[i]+0.25);
+    });
+    [523,659,784].forEach(function(freq){
+      var o=c.createOscillator();
+      var og=c.createGain();
+      o.type='sine';
+      o.frequency.value=freq;
+      og.gain.setValueAtTime(0,c.currentTime+1.1);
+      og.gain.linearRampToValueAtTime(0.12,c.currentTime+1.18);
+      og.gain.linearRampToValueAtTime(0,c.currentTime+2.2);
+      o.connect(og);og.connect(g);
+      o.start(c.currentTime+1.1);
+      o.stop(c.currentTime+2.3);
+    });
+  }catch(e){}
+}
+
+function somTecla(){
+  if(!sndOn)return;
+  try{
+    var c=getACtx();
+    var buf=c.createBuffer(1,c.sampleRate*0.05,c.sampleRate);
+    var data=buf.getChannelData(0);
+    for(var i=0;i<data.length;i++){
+      data[i]=(Math.random()*2-1)*Math.pow(1-i/data.length,6)*0.84;
+    }
+    var src=c.createBufferSource();
+    src.buffer=buf;
+    var f=c.createBiquadFilter();
+    f.type='bandpass';
+    f.frequency.value=1800+Math.random()*400;
+    f.Q.value=2;
+    var g=c.createGain();
+    g.gain.setValueAtTime(1.0,c.currentTime);
+    g.gain.linearRampToValueAtTime(0,c.currentTime+0.05);
+    src.connect(f);f.connect(g);g.connect(c.destination);
+    src.start();
+  }catch(e){}
+}
+
+function somAcerto(){
+  if(!sndOn)return;
+  try{
+    var c=getACtx();
+    var g=c.createGain();
+    g.connect(c.destination);
+    // Plim: dois parciais harmônicos tipo sino/xilofone
+    [[1047,0,0.18],[1319,0.02,0.22],[1568,0.05,0.16]].forEach(function(p){
+      var o=c.createOscillator();
+      var og=c.createGain();
+      o.type='sine';
+      o.frequency.setValueAtTime(p[0],c.currentTime+p[1]);
+      og.gain.setValueAtTime(0,c.currentTime+p[1]);
+      og.gain.linearRampToValueAtTime(0.28,c.currentTime+p[1]+0.01);
+      og.gain.exponentialRampToValueAtTime(0.001,c.currentTime+p[1]+p[2]);
+      o.connect(og);og.connect(g);
+      o.start(c.currentTime+p[1]);
+      o.stop(c.currentTime+p[1]+p[2]+0.05);
+    });
+  }catch(e){}
+}
+
+function somErro(){
+  if(!sndOn)return;
+  try{
+    var c=getACtx();
+    var g=c.createGain();
+    g.connect(c.destination);
+    // Dois bipes descendentes graves — sinal claro de erro
+    [[220,0],[180,0.18]].forEach(function(par){
+      var o=c.createOscillator();
+      var og=c.createGain();
+      o.type='sawtooth';
+      o.frequency.setValueAtTime(par[0],c.currentTime+par[1]);
+      o.frequency.linearRampToValueAtTime(par[0]*0.75,c.currentTime+par[1]+0.15);
+      og.gain.setValueAtTime(0,c.currentTime+par[1]);
+      og.gain.linearRampToValueAtTime(0.25,c.currentTime+par[1]+0.02);
+      og.gain.linearRampToValueAtTime(0,c.currentTime+par[1]+0.18);
+      o.connect(og);og.connect(g);
+      o.start(c.currentTime+par[1]);
+      o.stop(c.currentTime+par[1]+0.22);
+    });
+  }catch(e){}
+}
+
 // ══ ESTADO GLOBAL ══
 var adminMode=false;
 var playerName='';
-var phaseScores=[0,0,0,0];
-var phaseErrors=[0,0,0,0];
+var phaseScores=[0,0,0,0,0];
+var phaseErrors=[0,0,0,0,0];
 var currentPhase=0;
 var currentChallenge=0;
 var phaseScore=0;
@@ -517,11 +652,97 @@ var phases=[
        code:['<span class="cm"># Dicionário do detonador</span>','detonador = {<span class="str">&quot;codigo&quot;</span>: <span class="num">7749</span>, <span class="str">&quot;ativo&quot;</span>: <span class="kw">True</span>}','<span class="cm"># Acesse o valor da chave "codigo"</span>','sequencia = detonador[INPUT]','<span class="fn">print</span>(<span class="str">&quot;Código:&quot;</span>, sequencia)'],
        ph:'chave aqui',answers:['"codigo"',"'codigo'"],hint:'Para acessar um valor num dicionário use colchetes com a chave entre aspas. A chave é "codigo" — inclua as aspas.'},
       {ctx:'A função de desativação precisa de dois parâmetros: <b>codigo</b> e <b>tentativas</b>. Complete o cabeçalho da função.',diff:'Intermediário',
-       code:['<span class="cm"># Função de desativação</span>','<span class="kw">def</span> <span class="fn">desativar</span>INPUT:','    <span class="kw">if</span> codigo == <span class="num">7749</span> <span class="kw">and</span> tentativas > <span class="num">0</span>:','        <span class="kw">return</span> <span class="str">&quot;BOMBA DESATIVADA&quot;</span>','    <span class="kw">return</span> <span class="str">&quot;FALHA&quot;</span>'],
+       code:['<span class="cm"># Função de desativação</span>','<span class="kw">def</span> <span class="fn">desativar</span>INPUT:','     <span class="kw">if</span> codigo == <span class="num">7749</span> <span class="kw">and</span> tentativas > <span class="num">0</span>:','        <span class="kw">return</span> <span class="str">&quot;BOMBA DESATIVADA&quot;</span>','    <span class="kw">return</span> <span class="str">&quot;FALHA&quot;</span>'],
        ph:'(parâmetros)',answers:['(codigo, tentativas)','(codigo,tentativas)'],hint:'Parâmetros ficam entre parênteses após o nome, separados por vírgula. Os dois são: codigo e tentativas.'},
       {ctx:'O módulo pode gerar um <b>ValueError</b>. O bloco try já está pronto — complete a linha que captura esse erro específico.',diff:'Avançado',
        code:['<span class="cm"># Capturando erros</span>','<span class="kw">try</span>:','    resultado = desativar(<span class="num">7749</span>, <span class="num">3</span>)','    <span class="fn">print</span>(resultado)','<span class="kw">except</span> INPUT <span class="kw">as</span> e:','    <span class="fn">print</span>(<span class="str">&quot;Erro:&quot;</span>, e)'],
        ph:'tipo do erro',answers:['valueerror','ValueError'],hint:'O except pode capturar tipos específicos de erro. O erro mencionado no contexto é exatamente o que deve ser digitado.'},
+    ]
+  },
+  {
+    name:'FASE EXTRA — CHARADAS DO CRACKER',
+    color:'#f472b6', dotColor:'#f472b6',
+    label:'GOV-CORE :: DECODIFICADOR',
+    ctxColor:'#f472b611', ctxBorder:'#f472b633', ctxLabelColor:'#f472b6',
+    doneIcon:'&#128272;',
+    doneTitle:'Charadas resolvidas!',
+    doneSub:'O cracker subestimou você. Todas as bombas lógicas foram desarmadas!',
+    btnLabel:'[ FASE FINAL ] →',
+    challenges:[
+      {ctx:'O cracker embaralhou frases para esconder uma mensagem cifrada. Analise os fatiamentos e descubra o que será impresso.',diff:'Intermediário', type:'alt',
+       code:[
+         '<span class="cm"># Mensagem cifrada — ordem embaralhada</span>',
+         'frase1 = <span class="str">&quot;Cora Coralina, poetisa brasileira&quot;</span>',
+         'frase2 = <span class="str">&quot;Vitória da Conquista é uma cidade do Futuro&quot;</span>',
+         'frase3 = <span class="str">&quot;Maria Rita não estuda&quot;</span>',
+         'frase4 = <span class="str">&quot;Edmundo! Um bom jogador de futebol&quot;</span>',
+         'frase5 = <span class="str">&quot;Quem falou com Ana&quot;</span>',
+         '<span class="fn">print</span>(frase5[<span class="num">0</span>:<span class="num">4</span>], frase3[<span class="num">15</span>:], frase2[<span class="num">11</span>:<span class="num">20</span>], frase1[<span class="num">1</span>], frase4[<span class="num">2</span>:<span class="num">7</span>], sep=<span class="str">&quot; &quot;</span>)'
+       ],
+       alts:['a) poetisa Vitória estuda futebol com Ana','b) Quem estuda Conquista o mundo','c) Colinas é uma cidade do mundo','d) brasil Conquistaria Edmundo jogador que falou com Ana','e) brasileira é uma cidade do futuro, não o mundo de Ana'],
+       answer:'b',
+       hint:'Fatiamento extrai partes de uma string pela posição dos caracteres. Comece contando do zero e veja o que cada índice retorna em cada frase.'},
+
+      {ctx:'O cracker deixou um loop com erro para travar o sistema. Quais cores serão impressas antes do loop parar?',diff:'Intermediário', type:'alt',
+       code:[
+         '<span class="cm"># Loop armadilha do cracker</span>',
+         'cor = [<span class="str">&quot;verde&quot;</span>, <span class="str">&quot;amarelo&quot;</span>, <span class="str">&quot;azul&quot;</span>, <span class="str">&quot;branco&quot;</span>]',
+         'indice = <span class="num">0</span>',
+         '<span class="kw">while</span> (indice < <span class="fn">len</span>(cor)-<span class="num">2</span>):',
+         '    <span class="fn">print</span>(cor[indice])',
+         '    indice += <span class="num">1</span>'
+       ],
+       alts:['a) verde, amarelo, azul, branco','b) verde, amarelo, azul','c) verde, amarelo','d) verde','e) amarelo, azul'],
+       answer:'c',
+       hint:'Lembre que len() retorna o total de elementos. Pense no que len(cor)-2 vale e qual é a condição exata do while para decidir quando parar.'},
+
+      {ctx:'O cracker escondeu uma senha dentro de um vetor aninhado. Qual comando imprime apenas o nome <b>"Ana"</b>?',diff:'Avançado', type:'alt',
+       code:[
+         '<span class="cm"># Vetor aninhado — onde está Ana?</span>',
+         'array = [<span class="num">5</span>, <span class="num">2</span>, <span class="num">4</span>, <span class="num">5</span>, [<span class="num">12</span>, <span class="num">13</span>, <span class="num">14</span>, [<span class="num">100</span>, <span class="str">&quot;Ana&quot;</span>, <span class="num">101</span>, <span class="num">102</span>]]]'
+       ],
+       alts:['a) print(array[4][4][1])','b) print(array[4][3][1])','c) print(array[3][3][1])','d) print(array[4][3][0])','e) print(array[4][2][1])'],
+       answer:'b',
+       hint:'Para acessar elementos aninhados você precisa de múltiplos índices encadeados. Conte as camadas e os elementos de cada lista a partir do zero.'},
+
+      {ctx:'O cracker programou uma bomba que troca elementos de um vetor. O que o algoritmo faz e qual é o resultado?',diff:'Avançado', type:'alt',
+       code:[
+         '<span class="cm"># Algoritmo de troca — desarme a bomba!</span>',
+         'v = [<span class="num">10</span>, <span class="num">20</span>, <span class="num">30</span>, <span class="num">40</span>, <span class="num">50</span>, <span class="num">60</span>, <span class="num">70</span>, <span class="num">80</span>, <span class="num">90</span>, <span class="num">100</span>]',
+         'temp = v[<span class="num">0</span>]',
+         'v[<span class="num">0</span>] = v[-<span class="num">1</span>]',
+         'v[-<span class="num">1</span>] = temp',
+         '<span class="fn">print</span>(v)'
+       ],
+       alts:['a) [100,20,30,40,50,60,70,80,90,10]','b) [10,20,30,40,50,60,70,80,90,100]','c) [100,20,30,40,50,60,70,80,90,100]','d) [10,20,30,40,50,60,70,80,90,10]','e) [90,20,30,40,50,60,70,80,10,100]'],
+       answer:'a',
+       hint:'A variável temp é o segredo. Pense no que acontece quando você guarda um valor antes de sobrescrevê-lo — o que muda e o que permanece no vetor?'},
+
+      {ctx:'O cracker usou recursão para esconder o código de desativação. Qual será o resultado da chamada <b>bomba(4)</b>?',diff:'Avançado', type:'alt',
+       code:[
+         '<span class="cm"># Função recursiva do cracker</span>',
+         '<span class="kw">def</span> <span class="fn">bomba</span>(n):',
+         '    <span class="kw">if</span> n == <span class="num">0</span>:',
+         '        <span class="kw">return</span> <span class="num">1</span>',
+         '    <span class="kw">return</span> n * <span class="fn">bomba</span>(n - <span class="num">1</span>)',
+         '<span class="fn">print</span>(<span class="fn">bomba</span>(<span class="num">4</span>))'
+       ],
+       alts:['a) 16','b) 10','c) 24','d) 12','e) 8'],
+       answer:'c',
+       hint:'Funções recursivas chamam a si mesmas até atingir o caso base. Trace mentalmente a sequência de chamadas e multiplique os resultados ao retornar.'},
+
+      {ctx:'O cracker usou a sequência de Fibonacci como chave de criptografia. O código abaixo gera os primeiros termos — qual será o valor de <b>fib(7)</b>?',diff:'Avançado', type:'alt',
+       code:[
+         '<span class="cm"># Chave Fibonacci do cracker</span>',
+         '<span class="kw">def</span> <span class="fn">fib</span>(n):',
+         '    <span class="kw">if</span> n <= <span class="num">1</span>:',
+         '        <span class="kw">return</span> n',
+         '    <span class="kw">return</span> <span class="fn">fib</span>(n-<span class="num">1</span>) + <span class="fn">fib</span>(n-<span class="num">2</span>)',
+         '<span class="fn">print</span>(<span class="fn">fib</span>(<span class="num">7</span>))'
+       ],
+       alts:['a) 13','b) 21','c) 8','d) 34','e) 12'],
+       answer:'a',
+       hint:'Na sequência de Fibonacci cada número é a soma dos dois anteriores. Tente construir a sequência a partir do zero até chegar no sétimo termo.'},
     ]
   },
   {
@@ -624,7 +845,8 @@ async function runIntro(){
     box.innerHTML='<div class="avatar" style="background:'+d.color+'22;border-color:'+d.color+'44;">'+d.icon+'</div><div class="msg-content"><div class="msg-sender">'+d.sender+'</div><div class="msg-text">'+d.msg+'</div></div>';
     cont.appendChild(box);
     cont.scrollTop=cont.scrollHeight;
-    await sleep(9000);
+    blupMsg(d.color);
+    await sleep(10000);
   }
   var h2=document.getElementById('hint2');
   h2.style.display='flex';
@@ -669,7 +891,7 @@ function loadPhase(pi){
     var d=document.createElement('div');
     d.className='ci'+(i===0?' active':'');
     d.id='ci'+(i+1);
-    d.innerHTML='<div class="ci-num" style="'+(i===0?'border-color:'+ph.color+';color:'+ph.color:'')+';">'+(i+1)+'</div><span>'+['Básico','Médio','Avançado'][i]+'</span>';
+    d.innerHTML='<div class="ci-num" style="'+(i===0?'border-color:'+ph.color+';color:'+ph.color:'')+';">'+(i+1)+'</div><span>'+c.diff+'</span>';
     sc.appendChild(d);
   });
 
@@ -678,7 +900,7 @@ function loadPhase(pi){
   sh.innerHTML='';
   if(pi>0){
     sh.innerHTML='<div class="stitle">HISTÓRICO</div>';
-    var colors=['#00ff88','#ffcc00','#ff6b35'];
+    var colors=['#00ff88','#ffcc00','#ff6b35','#f472b6','#a78bfa'];
     for(var i=0;i<pi;i++){
       var d2=document.createElement('div');
       d2.style.cssText='font-size:12px;color:'+colors[i]+';margin-bottom:2px;';
@@ -737,7 +959,10 @@ function renderChallenge(){
       inp.style.color=ph.color;inp.style.borderColor=ph.color;
       inp.placeholder=ch.ph;
       inp.setAttribute('autocomplete','off');inp.setAttribute('spellcheck','false');
-      inp.addEventListener('keydown',function(e){if(e.key==='Enter')checkAnswer();});
+      inp.addEventListener('keydown',function(e){
+        if(e.key==='Enter'){checkAnswer();}
+        else if(e.key.length===1||e.key==='Backspace'){somTecla();}
+      });
       var s2=document.createElement('span');
       s2.style.color='#d1d5db';
       s2.innerHTML=parts[1]||'';
@@ -757,7 +982,33 @@ function renderChallenge(){
     if(num)num.style.cssText=i===currentChallenge?'border-color:'+ph.color+';color:'+ph.color:'';
   });
 
-  setTimeout(function(){var i=document.getElementById('userInput');if(i)i.focus();},150);
+  // alternativas ou input
+  var altList = document.getElementById('altList');
+  var codeLabel = document.getElementById('codeLabel');
+  var btnCheck = document.getElementById('btnCheck');
+  if(ch.type==='alt'){
+    altList.style.display='flex';
+    altList.innerHTML='';
+    codeLabel.textContent='ANALISE O CÓDIGO E MARQUE A ALTERNATIVA CORRETA:';
+    btnCheck.style.display='none';
+    ch.alts.forEach(function(txt, idx){
+      var letra = String.fromCharCode(97+idx);
+      var btn = document.createElement('button');
+      btn.className='alt-btn';
+      btn.textContent=txt;
+      btn.onclick=function(){ checkAlt(letra, btn); };
+      altList.appendChild(btn);
+    });
+  } else {
+    altList.style.display='none';
+    codeLabel.textContent='COMPLETE O CÓDIGO:';
+    btnCheck.style.display='';
+    setTimeout(function(){var i=document.getElementById('userInput');if(i)i.focus();},150);
+  }
+
+  // total de desafios
+  var tot = document.getElementById('chalTotal');
+  if(tot) tot.textContent = ph.challenges.length;
 }
 
 window.checkAnswer=function(){
@@ -770,6 +1021,7 @@ window.checkAnswer=function(){
   var ok=correct.indexOf(val.toLowerCase().replace(/"/g,"'"))>=0;
   var fb=document.getElementById('fb');
   if(ok){
+    somAcerto();
     inp.style.borderColor='#00ff88';inp.style.color='#00ff88';inp.style.background='#0a1a10';
     var pts=hintUsed?20:40;
     phaseScore+=pts;
@@ -783,6 +1035,7 @@ window.checkAnswer=function(){
       else finishPhase();
     },1500);
   }else{
+    somErro();
     inp.style.borderColor='#ff4444';inp.style.background='#1a0f0f';
     phaseErr++;
     document.getElementById('errDisplay').textContent=phaseErr;
@@ -790,6 +1043,48 @@ window.checkAnswer=function(){
     fb.textContent='✗ Resposta incorreta. Tente novamente.';
     fb.style.display='block';
     setTimeout(function(){if(inp){inp.style.borderColor=ph.color;inp.style.background='#1f2937';inp.style.color=ph.color;}},900);
+  }
+};
+
+window.checkAlt=function(letra, btn){
+  var ph=phases[currentPhase];
+  var ch=ph.challenges[currentChallenge];
+  var fb=document.getElementById('fb');
+  // desabilitar todos os botões
+  var btns=document.getElementById('altList').querySelectorAll('.alt-btn');
+  btns.forEach(function(b){ b.onclick=null; b.classList.remove('selected'); });
+  btn.classList.add('selected');
+  var ok=(letra===ch.answer);
+  if(ok){
+    somAcerto();
+    btn.classList.add('certa');
+    var pts=hintUsed?20:40;
+    phaseScore+=pts;
+    document.getElementById('scoreDisplay').textContent=phaseScore;
+    fb.className='fb ok';
+    fb.textContent='✓ Correto! +'+pts+' pontos.';
+    fb.style.display='block';
+    setTimeout(function(){
+      currentChallenge++;
+      if(currentChallenge<ph.challenges.length)renderChallenge();
+      else finishPhase();
+    },1600);
+  } else {
+    somErro();
+    btn.classList.add('errada');
+    btns.forEach(function(b,i){
+      if(String.fromCharCode(97+i)===ch.answer) b.classList.add('certa');
+    });
+    phaseErr++;
+    document.getElementById('errDisplay').textContent=phaseErr;
+    fb.className='fb err';
+    fb.textContent='✗ Incorreto. A resposta correta está destacada em verde.';
+    fb.style.display='block';
+    setTimeout(function(){
+      currentChallenge++;
+      if(currentChallenge<ph.challenges.length)renderChallenge();
+      else finishPhase();
+    },2500);
   }
 };
 
@@ -822,24 +1117,25 @@ function finishPhase(){
 }
 
 window.nextPhase=function(){
-  if(currentPhase<3)loadPhase(currentPhase+1);
+  if(currentPhase<4)loadPhase(currentPhase+1);
   else showVictory();
 };
 
 function showVictory(){
   var total=phaseScores.reduce(function(a,b){return a+b;},0);
   var totalErrs=phaseErrors.reduce(function(a,b){return a+b;},0);
-  var perc=Math.round(total/480*100);
+  var perc=Math.round(total/720*100);
   document.getElementById('victoryMsg').innerHTML='Payload apagado. Transferência bloqueada. Sistema restaurado. Bomba desativada.<br>Você salvou o governo, agente <b style="color:#a78bfa;">'+playerName+'</b>!';
   var vs=document.getElementById('victoryStats');
-  var colors=['#00ff88','#ffcc00','#ff6b35','#a78bfa'];
-  var labels=['Fase 1 — Fundamentos','Fase 2 — Estruturas','Fase 3 — Avançado','Fase Final — POO'];
+  var colors=['#00ff88','#ffcc00','#ff6b35','#f472b6','#a78bfa'];
+  var labels=['Fase 1 — Fundamentos','Fase 2 — Estruturas','Fase 3 — Desativar Bomba','Fase Extra — Charadas','Fase Final — POO'];
   vs.innerHTML='<div class="pstats">'+labels.map(function(l,i){return '<div class="prow">'+l+' <span style="color:'+colors[i]+'">'+phaseScores[i]+' pts</span></div>';}).join('')+'<div class="prow" style="color:#a78bfa;font-weight:500;">TOTAL <span style="color:#a78bfa;font-size:15px;">'+total+' pts ('+perc+'%)</span></div><div class="prow">Erros totais <span>'+totalErrs+'</span></div></div>';
   showScreen('victory-screen');
+  setTimeout(somVitoria, 400);
   var now=new Date();
   var horario=now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
   if(window.saveResult){
-    window.saveResult({nome:playerName,total:total,erros:totalErrs,fase1:phaseScores[0],fase2:phaseScores[1],fase3:phaseScores[2],faseFinal:phaseScores[3],completo:true,horario:horario});
+    window.saveResult({nome:playerName,total:total,erros:totalErrs,fase1:phaseScores[0],fase2:phaseScores[1],fase3:phaseScores[2],faseExtra:phaseScores[3],faseFinal:phaseScores[4],completo:true,horario:horario});
   }
 }
 
